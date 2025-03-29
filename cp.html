@@ -1,0 +1,1895 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AWS クラウドプラクティショナー試験対策クイズ</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: a1.6;
+            color: #333;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #232f3e;
+        }
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+        .quiz-container {
+            background-color: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        .options {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        .option {
+            padding: 15px;
+            background-color: #f0f0f0;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .option:hover {
+            background-color: #e6f7ff;
+            border-color: #1890ff;
+        }
+        .selected {
+            border-color: #1890ff;
+            background-color: #e6f7ff;
+        }
+        .correct {
+            border-color: #52c41a;
+            background-color: #f6ffed;
+        }
+        .incorrect {
+            border-color: #f5222d;
+            background-color: #fff1f0;
+        }
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: #ff9900;
+            color: white;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #ec7211;
+        }
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        .explanation {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #fafafa;
+            border-left: 4px solid #1890ff;
+            display: none;
+        }
+        .progress-container {
+            margin: 20px 0;
+        }
+        .progress-bar {
+            height: 10px;
+            background-color: #e0e0e0;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        .progress {
+            height: 100%;
+            background-color: #ff9900;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        .category-filter {
+            margin: 20px 0;
+            padding: 15px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+        .filter-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .filter-option {
+            padding: 8px 15px;
+            background-color: #f0f0f0;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .filter-option.active {
+            background-color: #ff9900;
+            color: white;
+        }
+        .results {
+            background-color: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            display: none;
+        }
+        .score-display {
+            font-size: 2rem;
+            margin: 20px 0;
+            color: #232f3e;
+        }
+        .category-scores {
+            margin: 20px 0;
+            text-align: left;
+        }
+        .category-score {
+            margin: 10px 0;
+        }
+        .category-score-bar {
+            height: 10px;
+            background-color: #e0e0e0;
+            border-radius: 5px;
+            overflow: hidden;
+            margin-top: 5px;
+        }
+        .category-score-progress {
+            height: 100%;
+            background-color: #ff9900;
+        }
+        .review-button {
+            margin-top: 20px;
+        }
+        .review-list {
+            margin-top: 20px;
+            text-align: left;
+        }
+        .review-item {
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            background-color: #fafafa;
+        }
+        .incorrect-review {
+            border-left: 3px solid #f5222d;
+        }
+        #timer {
+            font-size: 1.2rem;
+            text-align: center;
+            margin-bottom: 20px;
+            color: #232f3e;
+        }
+        #bookmarkButton {
+            background-color: #232f3e;
+            margin-left: 10px;
+        }
+        #bookmarkButton:hover {
+            background-color: #1a2530;
+        }
+        .bookmarked-indicator {
+            color: #ff9900;
+            margin-left: 10px;
+            display: none;
+        }
+        .bookmarks-panel {
+            margin-top: 20px;
+            display: none;
+        }
+        .bookmark-item {
+            padding: 10px;
+            background-color: #fafafa;
+            margin-bottom: 5px;
+            border-left: 3px solid #ff9900;
+            cursor: pointer;
+        }
+        .difficulty-indicator {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 3px;
+            font-size: 0.8rem;
+            margin-left: 10px;
+        }
+        .easy {
+            background-color: #52c41a;
+            color: white;
+        }
+        .medium {
+            background-color: #faad14;
+            color: white;
+        }
+        .hard {
+            background-color: #f5222d;
+            color: white;
+        }
+        @media (min-width: 768px) {
+            .options {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>AWS クラウドプラクティショナー試験対策クイズ</h1>
+        <p>AWS 認定試験の準備に役立つ 100 問のクイズです。</p>
+    </header>
+
+    <div class="category-filter">
+        <h3>カテゴリーフィルター</h3>
+        <div class="filter-options">
+            <div class="filter-option active" data-category="all">すべて</div>
+            <div class="filter-option" data-category="compute">コンピューティング</div>
+            <div class="filter-option" data-category="storage">ストレージ</div>
+            <div class="filter-option" data-category="database">データベース</div>
+            <div class="filter-option" data-category="network">ネットワーキング</div>
+            <div class="filter-option" data-category="security">セキュリティ</div>
+            <div class="filter-option" data-category="management">管理ツール</div>
+            <div class="filter-option" data-category="integration">統合サービス</div>
+        </div>
+    </div>
+
+    <div id="timer">時間: 00:00:00</div>
+
+    <div class="progress-container">
+        <div class="stats">
+            <div>問題: <span id="currentQuestion">1</span>/<span id="totalQuestions">100</span></div>
+            <div>正解: <span id="correctAnswers">0</span></div>
+        </div>
+        <div class="progress-bar">
+            <div class="progress" id="progressBar"></div>
+        </div>
+    </div>
+
+    <div class="quiz-container" id="quizContainer">
+        <h2 id="questionText">質問がロードされています...</h2>
+        <div class="options" id="options">
+            <!-- Options will be dynamically added here -->
+        </div>
+        <div class="explanation" id="explanation"></div>
+        <div class="button-container">
+            <button id="submitButton" disabled>回答を送信</button>
+            <button id="nextButton" style="display: none;">次の問題</button>
+            <button id="bookmarkButton">ブックマーク</button>
+            <span class="bookmarked-indicator" id="bookmarkedIndicator">ブックマーク済み</span>
+        </div>
+    </div>
+
+    <div class="bookmarks-panel" id="bookmarksPanel">
+        <h3>ブックマークした問題</h3>
+        <div id="bookmarksList">
+            <!-- Bookmarked questions will be displayed here -->
+        </div>
+    </div>
+
+    <div class="results" id="resultsContainer">
+        <h2>クイズ完了!</h2>
+        <div class="score-display">
+            得点: <span id="finalScore">0</span>/<span id="totalScore">0</span>
+        </div>
+        <div class="category-scores" id="categoryScores">
+            <!-- Category scores will be added here -->
+        </div>
+        <button id="restartButton">もう一度挑戦</button>
+        <button id="reviewButton" class="review-button">間違えた問題を復習</button>
+        <button id="showBookmarksButton" class="review-button">ブックマークした問題を表示</button>
+        <div class="review-list" id="reviewList" style="display: none;">
+            <!-- Incorrect answers will be displayed here -->
+        </div>
+    </div>
+
+    <script>
+        // クイズの問題データ
+        // クイズの質問データ
+const quizData = [
+    {
+        question: "AWSのコンピューティングサービスで、仮想サーバーをプロビジョニングするための基本的なサービスはどれですか？",
+        options: [
+            "Amazon S3",
+            "Amazon EC2",
+            "Amazon RDS",
+            "AWS Lambda"
+        ],
+        answer: 1,
+        explanation: "Amazon EC2（Elastic Compute Cloud）は、AWSのクラウド内で仮想サーバーをプロビジョニングするための基本的なサービスです。EC2インスタンスはさまざまなサイズと構成で利用可能で、オンデマンド、リザーブド、またはスポットインスタンスとして購入できます。",
+        category: "コンピューティング"
+    },
+    {
+        question: "AWSのどのサービスがオブジェクトストレージを提供し、99.999999999%（11個の9）の耐久性を持っていますか？",
+        options: [
+            "Amazon EBS",
+            "Amazon EFS",
+            "Amazon S3",
+            "Amazon Glacier"
+        ],
+        answer: 2,
+        explanation: "Amazon S3（Simple Storage Service）は、高い耐久性を持つオブジェクトストレージサービスです。S3は99.999999999%（11個の9）の耐久性を提供し、ウェブサイト、バックアップ、データアーカイブなど、さまざまなユースケースに適しています。",
+        category: "ストレージ"
+    },
+    {
+        question: "AWSのどのデータベースサービスはNoSQLデータモデルを使用していますか？",
+        options: [
+            "Amazon RDS",
+            "Amazon Redshift",
+            "Amazon DynamoDB",
+            "Amazon Aurora"
+        ],
+        answer: 2,
+        explanation: "Amazon DynamoDBは、AWSが提供するフルマネージドのNoSQLデータベースサービスです。キーバリューストアとドキュメントデータベースの両方の特性を持ち、高速で予測可能なパフォーマンスと、シームレスなスケーラビリティを提供します。",
+        category: "データベース"
+    },
+    {
+        question: "AWSの「責任共有モデル」について、以下の説明で正しいものはどれですか？",
+        options: [
+            "AWSがインフラストラクチャのすべての側面に責任を持ち、顧客はアプリケーションのみに責任を持つ",
+            "顧客がインフラストラクチャとアプリケーションの両方に責任を持ち、AWSはコンサルティングのみを提供する",
+            "AWSがクラウドの「中」のセキュリティに責任を持ち、顧客はクラウドの「上」のセキュリティに責任を持つ",
+            "セキュリティの責任はサービスレベル契約（SLA）によって個別に決定される"
+        ],
+        answer: 2,
+        explanation: "AWSの責任共有モデルでは、AWSがクラウドの「中」のセキュリティ（物理インフラストラクチャ、ネットワーク、ハイパーバイザーなど）に責任を持ち、顧客はクラウドの「上」のセキュリティ（ゲストOS、アプリケーション、データなど）に責任を持ちます。これは、両者が協力してクラウド環境の安全性を確保することを意味します。",
+        category: "セキュリティとコンプライアンス"
+    },
+    {
+        question: "アプリケーションを複数のAWSリージョンにデプロイする主な理由は何ですか？",
+        options: [
+            "AWS無料利用枠を最大限に活用するため",
+            "Trusted Advisorのレコメンデーションに従うため",
+            "コストを削減するため",
+            "災害対策と高可用性を実現するため"
+        ],
+        answer: 3,
+        explanation: "アプリケーションを複数のAWSリージョンにデプロイする主な理由は、災害対策とグローバルな高可用性を実現するためです。リージョンレベルの障害が発生しても、他のリージョンでサービスを継続できるため、アプリケーションの耐障害性と信頼性が向上します。また、ユーザーに地理的に近いリージョンからサービスを提供することで、レイテンシーを低減することもできます。",
+        category: "アーキテクチャ設計"
+    },
+    {
+        question: "AWS Cloud Adoptionフレームワーク（CAF）の主な目的は何ですか？",
+        options: [
+            "AWSサービスの使用量を最適化してコストを削減すること",
+            "クラウドへの移行を加速するためのガイダンスを提供すること",
+            "AWS技術認定の取得プロセスを簡素化すること",
+            "マルチクラウド環境でのアプリケーション管理を支援すること"
+        ],
+        answer: 1,
+        explanation: "AWS Cloud Adoption Framework（CAF）は、クラウドへの移行を加速するためのガイダンスを提供するフレームワークです。ビジネス、人材、ガバナンス、プラットフォーム、セキュリティ、運用の6つの視点から組織のクラウド対応能力を評価し、クラウド移行の計画と実行に役立ちます。",
+        category: "クラウドコンセプト"
+    },
+    {
+        question: "AWSの「サーバーレス」コンピューティングの主な特徴は何ですか？",
+        options: [
+            "従量課金制のサーバーを使用すること",
+            "より安価なサーバーハードウェアを使用すること",
+            "基盤となるサーバーの管理をAWSに任せること",
+            "1つのサーバーで複数のアプリケーションを実行すること"
+        ],
+        answer: 2,
+        explanation: "AWSのサーバーレスコンピューティングの主な特徴は、基盤となるサーバーの管理をAWSに任せることです。開発者はサーバーのプロビジョニング、パッチ適用、スケーリングなどを気にする必要がなく、コードの作成とビジネスロジックの実装に集中できます。AWS Lambdaはサーバーレスコンピューティングの代表的なサービスで、コードが実行された時間と回数に基づいて課金されます。",
+        category: "コンピューティング"
+    },
+    {
+        question: "AWS Identity and Access Management（IAM）の主な機能として正しいものはどれですか？",
+        options: [
+            "ウェブアプリケーションの脆弱性をスキャンする",
+            "AWSリソースへのアクセスを制御する",
+            "AWSの請求情報を管理する",
+            "AWSリソースの使用状況をモニタリングする"
+        ],
+        answer: 1,
+        explanation: "AWS Identity and Access Management（IAM）は、AWSリソースへのアクセスを安全に制御するためのサービスです。IAMを使用すると、誰がどのリソースにアクセスできるかを指定するポリシーを作成し、ユーザー、グループ、ロールなどのアイデンティティに付与することができます。これにより、最小権限の原則に基づいてアクセス権を管理できます。",
+        category: "セキュリティとコンプライアンス"
+    },
+    {
+        question: "オンプレミスのデータセンターと比較した場合、AWSクラウドの主な経済的利点はどれですか？",
+        options: [
+            "高額な前払い設備投資が不要であること",
+            "常に無料でサービスを利用できること",
+            "AWSは顧客ごとに専用のハードウェアを提供すること",
+            "すべてのサービスが固定価格で利用できること"
+        ],
+        answer: 0,
+        explanation: "AWSクラウドの主な経済的利点の一つは、高額な前払い設備投資（CAPEX）が不要なことです。従来のオンプレミスデータセンターでは、サーバー、ストレージ、ネットワーク機器などに多額の初期投資が必要でしたが、AWSではこれらのリソースを必要に応じて利用でき、使用した分だけ支払う従量課金制となっています。これにより、資本支出を運用支出（OPEX）に転換でき、ビジネスの柔軟性と俊敏性が向上します。",
+        category: "クラウドコンセプト"
+    },
+    {
+        question: "AWSのどのサービスが、ウェブサイトやアプリケーションのコンテンツ配信を高速化するために使用されますか？",
+        options: [
+            "AWS Direct Connect",
+            "Amazon CloudFront",
+            "Elastic Load Balancing",
+            "Amazon Route 53"
+        ],
+        answer: 1,
+        explanation: "Amazon CloudFrontは、AWSのコンテンツ配信ネットワーク（CDN）サービスです。世界中のエッジロケーションを通じてウェブサイトやアプリケーションのコンテンツ（静的ファイル、動的コンテンツ、ストリーミングメディアなど）を配信し、低レイテンシーと高速なデータ転送速度を実現します。これにより、エンドユーザーのエクスペリエンスが向上します。",
+        category: "ネットワーキング"
+    },
+    {
+        question: "インフラストラクチャに対し「コードとしてのインフラストラクチャ」（IaC）アプローチを実装するためのAWSサービスはどれですか？",
+        options: [
+            "AWS Config",
+            "AWS CloudFormation",
+            "AWS Trusted Advisor",
+            "AWS Systems Manager"
+        ],
+        answer: 1,
+        explanation: "AWS CloudFormationは、AWSリソースをコードとして定義して自動的にデプロイするためのサービスです。テンプレートを使用してリソースとその依存関係を記述し、それらを「スタック」としてデプロイします。これにより、インフラストラクチャをバージョン管理し、一貫した方法で繰り返しデプロイすることができます。",
+        category: "管理とガバナンス"
+    },
+    {
+        question: "AWSのどのコンポーネントが、特定のAWSリージョン内の物理的に分離されたデータセンター群を表していますか？",
+        options: [
+            "エッジロケーション",
+            "配置グループ",
+            "アベイラビリティーゾーン",
+            "VPC"
+        ],
+        answer: 2,
+        explanation: "アベイラビリティーゾーン（AZ）は、特定のAWSリージョン内の物理的に分離されたデータセンター群です。各AZは互いに数マイル離れていますが、低レイテンシーのネットワークで接続されています。アプリケーションを複数のAZにデプロイすることで、単一障害点を排除し、高可用性を実現できます。",
+        category: "クラウドコンセプト"
+    },
+    {
+        question: "AWSでデータの暗号化を管理するための主要なサービスはどれですか？",
+        options: [
+            "AWS Shield",
+            "AWS WAF",
+            "AWS KMS",
+            "Amazon Inspector"
+        ],
+        answer: 2,
+        explanation: "AWS Key Management Service（KMS）は、データの暗号化に使用する暗号化キーの作成と管理を容易にするサービスです。KMSを使用すると、暗号化キーの制御を維持しながら、AWSサービス内のデータを保護できます。キーのローテーション、アクセス管理、および監査機能も提供されます。",
+        category: "セキュリティとコンプライアンス"
+    },
+    {
+        question: "AWSのどのサービスが、複数のAZ間でトラフィックを自動的に分散し、アプリケーションの高可用性を確保しますか？",
+        options: [
+            "Amazon CloudFront",
+            "Amazon Route 53",
+            "AWS Direct Connect",
+            "Elastic Load Balancing"
+        ],
+        answer: 3,
+        explanation: "Elastic Load Balancing（ELB）は、複数のAZ間でトラフィックを自動的に分散するAWSのサービスです。ELBは、受信したアプリケーショントラフィックを複数のターゲット（EC2インスタンス、コンテナ、IPアドレスなど）に分散し、アプリケーションの耐障害性を向上させます。現在、Application Load Balancer、Network Load Balancer、Gateway Load Balancer、Classic Load Balancerの4種類があります。",
+        category: "ネットワーキング"
+    },
+    {
+        question: "AWSでVPCを作成する際の主な目的は何ですか？",
+        options: [
+            "仮想サーバーをより速く起動するため",
+            "AWSアカウントの請求を簡素化するため",
+            "クラウド内に論理的に分離されたネットワーク環境を作成するため",
+            "複数のAWSアカウント間でリソースを共有するため"
+        ],
+        answer: 2,
+        explanation: "Amazon Virtual Private Cloud（VPC）を作成する主な目的は、AWSクラウド内に論理的に分離されたネットワーク環境を作成することです。VPC内では、IPアドレス範囲、サブネット、ルートテーブル、ネットワークゲートウェイなどを定義でき、オンプレミスのデータセンターと同様のネットワーク構成を実現できます。これにより、セキュリティを強化し、リソースを論理的にグループ化できます。",
+        category: "ネットワーキング"
+    },
+    {
+        question: "AWSリソースの使用状況を監視し、メトリクスを収集するためのサービスはどれですか？",
+        options: [
+            "AWS CloudTrail",
+            "Amazon CloudWatch",
+            "AWS Config",
+            "Amazon Inspector"
+        ],
+        answer: 1,
+        explanation: "Amazon CloudWatchは、AWSリソースの使用状況を監視し、メトリクスを収集するサービスです。CloudWatchを使用すると、CPUの使用率、ネットワークトラフィック、ディスクI/Oなどのメトリクスをモニタリングし、アラームを設定し、自動アクションをトリガーできます。また、ログの収集と分析も行えます。",
+        category: "管理とガバナンス"
+    },
+    {
+        question: "AWSの料金モデルの基本的な考え方として正しいものはどれですか？",
+        options: [
+            "すべてのサービスは月額固定料金で提供される",
+            "最初の1年間はすべてのサービスが無料で利用できる",
+            "使用した分だけ支払う従量課金制である",
+            "年間契約を結ぶことで、すべてのサービスが定額で利用できる"
+        ],
+        answer: 2,
+        explanation: "AWSの料金モデルの基本的な考え方は「使用した分だけ支払う」従量課金制です。これにより、使用するリソースと期間に応じて料金が発生し、使用していないリソースに対しては料金が発生しません。この柔軟な料金モデルにより、必要に応じてリソースをスケールアップまたはスケールダウンし、コストを最適化できます。",
+        category: "請求と料金"
+    },
+    {
+        question: "AWSの「Well-Architected Framework」の主な目的は何ですか？",
+        options: [
+            "AWSの認定試験に合格するためのガイドラインを提供すること",
+            "クラウドアプリケーションを構築するための最適なプログラミング言語を選定すること",
+            "安全で効率的、高性能かつコスト効率の良いシステムを構築するためのベストプラクティスを提供すること",
+            "AWSサービスの最新アップデートと機能を追跡すること"
+        ],
+        answer: 2,
+        explanation: "AWS Well-Architected Frameworkの主な目的は、安全で効率的、高性能かつコスト効率の良いシステムを構築するためのベストプラクティスを提供することです。このフレームワークは、運用上の優秀性、セキュリティ、信頼性、パフォーマンス効率、コスト最適化、持続可能性の6つの柱に基づいており、クラウドアーキテクトがアプリケーションとワークロードを評価・改善するための一貫したアプローチを提供します。",
+        category: "クラウドコンセプト"
+    },
+    {
+        question: "AWSのどのサービスがAPI呼び出し、リソースの変更、ユーザーアクティビティなどのアカウントアクティビティを記録しますか？",
+        options: [
+            "Amazon CloudWatch",
+            "AWS CloudTrail",
+            "AWS Config",
+            "Amazon Inspector"
+        ],
+        answer: 1,
+        explanation: "AWS CloudTrailは、AWSアカウントのAPI呼び出し、リソースの変更、ユーザーアクティビティなどのアカウントアクティビティを記録するサービスです。CloudTrailを有効にすると、「誰が」「何を」「いつ」「どこで」行ったかを追跡し、セキュリティ分析、リソース変更の追跡、コンプライアンス監査に役立てることができます。",
+        category: "管理とガバナンス"
+    },
+    {
+        question: "AWS Trusted Advisorの主な機能は何ですか？",
+        options: [
+            "AWSアカウントのセキュリティ認証情報を管理する",
+            "AWS環境を最適化するためのリアルタイムのガイダンスを提供する",
+            "AWSマーケットプレイスからソフトウェアをインストールする",
+            "AWSサポートケースを管理する"
+        ],
+        answer: 1,
+        explanation: "AWS Trusted Advisorは、AWS環境を最適化するためのリアルタイムのガイダンスを提供するサービスです。コスト最適化、パフォーマンス、セキュリティ、耐障害性、サービス制限の5つのカテゴリでベストプラクティスをチェックし、問題やリスクを特定して具体的な改善策を提案します。",
+        category: "管理とガバナンス"
+    },
+    {
+        question: "AWSの「Auto Scaling」の主な目的は何ですか？",
+        options: [
+            "AWSの料金を自動的に最適化すること",
+            "アプリケーションの負荷に応じて自動的にリソース容量を調整すること",
+            "サーバーのパッチ適用を自動化すること",
+            "データベースのバックアップを自動的にスケジュールすること"
+        ],
+        answer: 1,
+        explanation: "AWS Auto Scalingの主な目的は、アプリケーションの負荷に応じて自動的にリソース容量を調整することです。需要が増加するとリソース（EC2インスタンスなど）を追加し、需要が減少すると不要なリソースを削除します。これにより、アプリケーションのパフォーマンスと可用性を維持しながら、コストを最適化できます。",
+        category: "コンピューティング"
+    },
+    {
+        question: "AWS Support Plansで提供されていないサポートレベルはどれですか？",
+        options: [
+            "Basic",
+            "Developer",
+            "Business",
+            "Ultimate"
+        ],
+        answer: 3,
+        explanation: "AWS Support Plansには、Basic、Developer、Business、Enterpriseの4つのレベルがあります。「Ultimate」というサポートレベルは存在しません。各プランはサポート範囲、応答時間、料金体系が異なり、ニーズに合わせて選択できます。",
+        category: "請求と料金"
+    },
+    {
+        question: "AWSのリザーブドインスタンスの主な利点は何ですか？",
+        options: [
+            "オンデマンドインスタンスよりも高い処理能力を提供する",
+            "オンデマンドインスタンスよりも割引価格でEC2インスタンスを利用できる",
+            "1時間単位ではなく秒単位で課金される",
+            "自動的にスケールアップおよびスケールダウンする"
+        ],
+        answer: 1,
+        explanation: "AWSのリザーブドインスタンスの主な利点は、オンデマンドインスタンスと比較して大幅な割引価格でEC2インスタンスを利用できることです。1年または3年の期間を前払いまたは一部前払いでコミットすることで、最大72%のコスト削減が可能です。安定した予測可能なワークロードがある場合に特に有効です。",
+        category: "請求と料金"
+    },
+    {
+        question: "クラウドコンピューティングの「従量課金制」（Pay-as-you-go）モデルの主な利点は何ですか？",
+        options: [
+            "IT資産の減価償却が不要になる",
+            "すべてのITコストが完全に固定される",
+            "容量を正確に予測する必要がなくなる",
+            "無制限の無料ストレージが提供される"
+        ],
+        answer: 2,
+        explanation: "クラウドコンピューティングの「従量課金制」モデルの主な利点は、容量を正確に予測する必要がなくなることです。従来のITインフラでは、需要の変動に対応するために事前に容量を過剰に見積もる必要がありましたが、従量課金制では実際に使用したリソースに対してのみ支払えばよいため、リソースの過剰プロビジョニングや過少プロビジョニングを避けることができます。",
+        category: "クラウドコンセプト"
+    },
+    {
+        question: "AWSのどのサービスが、リレーショナルデータベースの管理を簡素化しますか？",
+        options: [
+            "Amazon DynamoDB",
+            "Amazon Redshift",
+            "Amazon ElastiCache",
+            "Amazon RDS"
+        ],
+        answer: 3,
+        explanation: "Amazon Relational Database Service（RDS）は、クラウドでリレーショナルデータベースの設定、運用、スケーリングを簡素化するマネージドサービスです。Amazon RDSは、MySQL、PostgreSQL、MariaDB、Oracle、SQL Server、Amazon Auroraなど、複数のデータベースエンジンをサポートし、バックアップ、パッチ適用、スケーリングなどの時間のかかる管理タスクを自動化します。",
+        category: "データベース"
+    },
+    {
+        question: "AWSで「共有責任モデル」における顧客の責任はどれですか？",
+        options: [
+            "AWSデータセンターの物理的セキュリティ",
+            "AWSグローバルインフラストラクチャの保守",
+            "EC2インスタンス上のゲストOSのパッチ適用",
+            "基盤となるハードウェアの障害対応"
+        ],
+        answer: 2,
+        explanation: "AWSの共有責任モデルでは、EC2インスタンス上のゲストOSのパッチ適用は顧客の責任です。顧客はクラウドの「中」（クラウドプラットフォーム上で実行するもの）に対して責任を持ち、ゲストOS、アプリケーション、データの保護、IAMの構成、ファイアウォールの設定などを行う必要があります。AWSはクラウドの「下」（物理インフラストラクチャ、ネットワーク、ハイパーバイザーなど）に対して責任を持ちます。",
+        category: "セキュリティとコンプライアンス"
+    },
+    {
+        question: "Amazon S3で利用可能なストレージクラスのうち、アクセス頻度が最も低いデータ向けに設計されているのはどれですか？",
+        options: [
+            "S3 Standard",
+            "S3 Intelligent-Tiering",
+            "S3 One Zone-IA",
+            "S3 Glacier Deep Archive"
+        ],
+        answer: 3,
+        explanation: "S3 Glacier Deep Archiveは、アクセス頻度が最も低いデータ向けに設計されたAmazon S3のストレージクラスです。年に1、2回しかアクセスされないデータのアーカイブに最適で、最低ストレージ期間は180日です。取り出し時間は標準で12時間、急ぎの場合でも48時間かかりますが、その分コストは他のストレージクラスと比較して最も低くなっています。",
+        category: "ストレージ"
+    },
+    {
+        question: "AWS Organizationsの主な機能として正しいものはどれですか？",
+        options: [
+            "AWSリソースの使用状況を監視する",
+            "複数のAWSアカウントを一元管理する",
+            "AWSサービスの新機能をテストする",
+            "AWSリソースの自動バックアップを行う"
+        ],
+        answer: 1,
+        explanation: "AWS Organizationsの主な機能は、複数のAWSアカウントを一元管理することです。組織単位（OU）を作成してアカウントを階層的に整理し、サービスコントロールポリシー（SCP）を使用してアクセス権を一元管理できます。また、一括請求、アカウント間でのリザーブドインスタンスの共有、AWSサービスの一括有効化などの機能も提供します。",
+        category: "管理とガバナンス"
+    },
+    {
+        question: "AWSのどのサービスが、設定された基準から逸脱したリソースを特定し、通知するために使用されますか？",
+        options: [
+            "AWS CloudTrail",
+            "Amazon CloudWatch",
+            "AWS Config",
+            "AWS Trusted Advisor"
+        ],
+        answer: 2,
+        explanation: "AWS Configは、AWSリソースの設定を評価、監査、確認するためのサービスです。リソースの設定変更を継続的に記録し、設定された基準（設定ルール）から逸脱したリソースを特定して通知します。これにより、コンプライアンス監査、セキュリティ分析、変更管理、運用上のトラブルシューティングに役立ちます。",
+        category: "管理とガバナンス"
+    },
+    {
+        question: "AWS Direct Connectの主な目的は何ですか？",
+        options: [
+            "複数のVPC間の接続を提供する",
+            "オンプレミスネットワークとAWS間の専用ネットワーク接続を確立する",
+            "AWSリージョン間のデータ転送を高速化する",
+            "CloudFrontエッジロケーションへの直接アクセスを提供する"
+        ],
+        answer: 1,
+        explanation: "AWS Direct Connectの主な目的は、オンプレミスネットワークとAWS間の専用ネットワーク接続を確立することです。インターネットを経由せずに、専用の物理接続を通じてAWSリソースにアクセスできるため、帯域幅の確保、レイテンシーの低減、セキュリティの強化が可能です。大量のデータ転送やミッションクリティカルなワークロードに適しています。",
+        category: "ネットワーキング"
+    },
+    {
+        question: "アプリケーションの拡張性を向上させるために適切なAWSアーキテクチャの原則はどれですか？",
+        options: [
+            "すべてのコンポーネントを単一のEC2インスタンスに統合する",
+            "ステートフルなアーキテクチャを使用する",
+            "コンポーネントを疎結合にする",
+            "カスタムハードウェアソリューションを使用する"
+        ],
+        answer: 2,
+        explanation: "アプリケーションの拡張性を向上させるための適切なAWSアーキテクチャの原則は、コンポーネントを疎結合にすることです。疎結合なアーキテクチャでは、各コンポーネントが独立して動作し、他のコンポーネントに最小限の依存関係しか持ちません。例えば、キューや通知システム（Amazon SQS、SNSなど）を使用して非同期通信を実現することで、各サービスが独立してスケールできるようになります。",
+        category: "アーキテクチャ設計"
+    },
+    {
+        question: "AWSのどのデータベースサービスがデータウェアハウスソリューションとして設計されていますか？",
+        options: [
+            "Amazon RDS",
+            "Amazon DynamoDB",
+            "Amazon ElastiCache",
+            "Amazon Redshift"
+        ],
+        answer: 3,
+        explanation: "Amazon Redshiftは、AWSのマネージドデータウェアハウスサービスです。ペタバイト規模のデータに対して高速なクエリと分析処理を実行するために設計されており、列指向ストレージ技術と並列クエリ実行を利用しています。ビジネスインテリジェンス（BI）ツールとの統合も容易で、大規模なデータ分析ワークロードに適しています。",
+        category: "データベース"
+    },
+    {
+        question: "Amazon EC2インスタンスにアタッチできる永続的なブロックストレージを提供するAWSサービスはどれですか？",
+        options: [
+            "Amazon S3",
+            "Amazon EFS",
+            "Amazon EBS",
+            "Amazon Glacier"
+        ],
+        answer: 2,
+        explanation: "Amazon Elastic Block Store（EBS）は、EC2インスタンスにアタッチできる永続的なブロックストレージを提供するAWSサービスです。EBSボリュームは特定のアベイラビリティーゾーン内に存在し、EC2インスタンスから独立して存在します。そのため、インスタンスが終了しても、データを保持したり、別のインスタンスにアタッチしたりすることができます。",
+        category: "ストレージ"
+    },
+    {
+        question: "AWS Lambdaの特徴として正しいものはどれですか？",
+        options: [
+            "仮想マシンをプロビジョニングする必要がある",
+            "コードが実行されていない時間に対しても課金される",
+            "サーバーのプロビジョニングや管理なしでコードを実行できる",
+            "単一のプログラミング言語しかサポートしていない"
+        ],
+        answer: 2,
+        explanation: "AWS Lambdaの特徴は、サーバーのプロビジョニングや管理なしでコードを実行できることです。これは「サーバーレス」コンピューティングの一例で、開発者はインフラストラクチャの管理ではなく、コードに集中できます。Lambdaは、コードが実行されている時間と実行回数にのみ課金され、複数のプログラミング言語（Node.js、Python、Java、Go、Ruby、.NET、およびカスタムランタイム）をサポートしています。",
+        category: "コンピューティング"
+    },
+    {
+        question: "AWSのどのサービスが、複数のマイクロサービスを相互接続するためのサービスメッシュを提供しますか？",
+        options: [
+            "AWS App Mesh",
+            "Amazon SNS",
+            "Amazon SQS",
+            "AWS Step Functions"
+        ],
+        answer: 0,
+        explanation: "AWS App Meshは、複数のマイクロサービスを相互接続するためのサービスメッシュを提供するAWSサービスです。マイクロサービスアーキテクチャにおけるサービス間の通信を監視、制御、デバッグするための一貫した方法を提供します。トラフィックの可視化、エンドツーエンドのトレース、高度なルーティング制御などの機能を備えています。",
+        category: "アプリケーション統合"
+    },
+    {
+        question: "Amazon Virtual Private Cloud（VPC）の主な構成要素はどれですか？",
+        options: [
+            "ゾーン、コンテナ、ノード",
+            "クラスター、ポッド、デプロイメント",
+            "サブネット、ルートテーブル、セキュリティグループ",
+            "バケット、オブジェクト、フォルダ"
+        ],
+        answer: 2,
+        explanation: "Amazon Virtual Private Cloud（VPC）の主な構成要素には、サブネット、ルートテーブル、セキュリティグループなどがあります。サブネットはVPC内のIP範囲の区分で、ルートテーブルはネットワークトラフィックの経路を決定し、セキュリティグループはインスタンスレベルのファイアウォールとして機能します。その他の要素としては、ネットワークACL、インターネットゲートウェイ、NAT、VPCエンドポイントなどがあります。",
+        category: "ネットワーキング"
+    },
+    {
+        question: "AWSの「Elastic」という用語が意味するものとして最も適切なのはどれですか？",
+        options: [
+            "常に無料で使用できるサービス",
+            "需要に応じて自動的に拡大または縮小する能力",
+            "基本的なデータセンター運用のアウトソーシング",
+            "高速なネットワーク接続の提供"
+        ],
+        answer: 1,
+        explanation: "AWSの「Elastic」という用語は、需要に応じて自動的に拡大または縮小する能力を意味します。これはクラウドコンピューティングの主要な利点の一つであり、リソースを必要に応じて迅速にプロビジョニングおよび解放できるため、変動する需要に効率的に対応できます。例えば、Amazon EC2（Elastic Compute Cloud）やAmazon EBS（Elastic Block Store）などのサービス名に「Elastic」が含まれています。",
+        category: "クラウドコンセプト"
+    },
+    {
+        question: "Amazon Route 53の主な機能は何ですか？",
+        options: [
+            "リソース間で53種類のルートを提供する",
+            "53のアベイラビリティーゾーンにわたるリソースのルーティング",
+            "スケーラブルなDNSサービスとドメイン登録の提供",
+            "EC2インスタンス間の直接的なプライベート接続の提供"
+        ],
+        answer: 2,
+        explanation: "Amazon Route 53の主な機能は、スケーラブルなDNS（ドメインネームシステム）サービスとドメイン登録の提供です。Route 53を使用すると、ドメイン名（例：example.com）を登録し、そのドメインに対するDNSクエリを適切なリソース（ウェブサーバー、Elastic Load Balancer、CloudFrontディストリビューションなど）にルーティングできます。また、ヘルスチェックやトラフィックフロー、レイテンシーベースルーティングなどの高度な機能も提供します。",
+        category: "ネットワーキング"
+    },
+    {
+        question: "AWSの共有責任モデルにおいて、AWSが責任を持つ「クラウドの「セキュリティ」」の要素として正しいものはどれですか？",
+        options: [
+            "顧客データの暗号化",
+            "IAMユーザーとアクセス管理",
+            "物理サーバーとストレージデバイスのセキュリティ",
+            "アプリケーションレベルのファイアウォールの設定"
+        ],
+        answer: 2,
+        explanation: "AWSの共有責任モデルにおいて、AWSが責任を持つ「クラウドの「セキュリティ」」の要素には、物理サーバーとストレージデバイスのセキュリティが含まれます。AWSは、データセンターの物理的セキュリティ、ネットワークインフラストラクチャ、仮想化レイヤー、ホストOSなど、クラウドインフラストラクチャ全体の保護に責任を持ちます。一方、顧客は「クラウド内のセキュリティ」、つまり顧客データ、プラットフォーム、アプリケーション、ネットワーク設定などの保護に責任を持ちます。",
+        category: "セキュリティとコンプライアンス"
+    },
+    {
+        question: "AWSでクラウドリソースのタグ付けを行う主な目的は何ですか？",
+        options: [
+            "リソースのバックアップを自動化するため",
+            "リソースを分類し、コスト配分やアクセス制御を容易にするため",
+            "AWSサービスの使用量制限を設定するため",
+            "リソースの地理的位置を特定するため"
+        ],
+        answer: 1,
+        explanation: "AWSでクラウドリソースのタグ付けを行う主な目的は、リソースを分類し、コスト配分やアクセス制御を容易にするためです。タグはキーと値のペアでリソースに付加され、プロジェクト、環境、部門、コストセンターなどの属性で分類できます。これにより、コスト配分レポートの作成、リソースの整理、アクセス制御ポリシーの適用などが容易になります。また、タグを使用して自動化やリソース管理の効率化も図れます。",
+        category: "管理とガバナンス"
+    },
+    {
+        question: "Amazon S3における「バケット」とは何ですか？",
+        options: [
+            "S3に保存されるファイルの別名",
+            "一時的なストレージの割り当て量",
+            "オブジェクトが保存される基本的なコンテナ",
+            "S3ストレージのコスト計算単位"
+        ],
+        answer: 2,
+        explanation: "Amazon S3における「バケット」とは、オブジェクトが保存される基本的なコンテナです。バケットはAWSアカウント内で作成され、グローバルに一意の名前を持ちます。S3オブジェクト（ファイルとメタデータ）はバケット内に保存され、バケットレベルでポリシー、アクセス制御、ストレージクラスなどを管理できます。バケットのデータは特定のリージョンに存在しますが、名前はAWS全体で一意である必要があります。",
+        category: "ストレージ"
+    },
+    {
+        question: "AWS Well-Architected Frameworkの6つの柱に含まれないものはどれですか？",
+        options: [
+            "セキュリティ",
+            "信頼性",
+            "スケーラビリティ",
+            "持続可能性"
+        ],
+        answer: 2,
+        explanation: "AWS Well-Architected Frameworkの6つの柱は、運用上の優秀性、セキュリティ、信頼性、パフォーマンス効率、コスト最適化、持続可能性です。「スケーラビリティ」は独立した柱ではなく、主にパフォーマンス効率の柱に含まれる概念です。このフレームワークは、AWSでシステムを構築する際のベストプラクティスを提供し、クラウドアーキテクトがアーキテクチャの評価と改善を行うのに役立ちます。",
+        category: "クラウドコンセプト"
+    },
+    {
+        question: "AWS Pricing Calculatorの主な用途は何ですか？",
+        options: [
+            "AWS請求書の検証",
+            "AWSで実行されるアプリケーションのパフォーマンス測定",
+            "AWSの使用コストの見積もり",
+            "AWSサービスの無料利用枠の計算"
+        ],
+        answer: 2,
+        explanation: "AWS Pricing Calculatorの主な用途は、AWSの使用コストの見積もりです。このツールを使用すると、さまざまなAWSサービス、リソースタイプ、リージョン、使用パターンに基づいて、クラウド移行やインフラストラクチャの展開にかかるコストを事前に見積もることができます。より正確な計画と予算作成に役立ちます。",
+        category: "請求と料金"
+    },
+    {
+        question: "AWSがサポートするマルチAZ配置の主な目的は何ですか？",
+        options: [
+            "データ処理速度の向上",
+            "単一障害点を排除した高可用性の実現",
+            "コストの削減",
+            "サーバーレスアーキテクチャの有効化"
+        ],
+        answer: 1,
+        explanation: "AWSがサポートするマルチAZ（アベイラビリティーゾーン）配置の主な目的は、単一障害点を排除した高可用性の実現です。アプリケーションやデータベースを複数のアベイラビリティーゾーンにレプリケーションすることで、単一のデータセンターの障害が発生した場合でもサービスを継続できます。マルチAZ配置はRDS、ElastiCache、Amazon MQ、Aurora、Redshiftなど、多くのAWSサービスでサポートされています。",
+        category: "アーキテクチャ設計"
+    },
+    {
+        question: "AWSのどのサービスが、コンテナの実行とオーケストレーションを支援しますか？",
+        options: [
+            "AWS Batch",
+            "Amazon ECS",
+            "AWS Elastic Beanstalk",
+            "AWS OpsWorks"
+        ],
+        answer: 1,
+        explanation: "Amazon Elastic Container Service（ECS）は、AWSが提供するコンテナの実行とオーケストレーションを支援するサービスです。ECSを使用すると、Dockerコンテナを簡単に実行、停止、管理できます。タスク定義、サービス、クラスターなどの概念を通じて、コンテナベースのアプリケーションを大規模に展開および管理できます。Amazon ECSはFargateとEC2、2つの起動タイプをサポートし、インフラストラクチャの管理レベルを選択できます。",
+        category: "コンピューティング"
+    },
+    {
+        question: "AWSでのウェブアプリケーションファイアウォール（WAF）の主な目的は何ですか？",
+        options: [
+            "セキュリティの脆弱性をスキャンする",
+            "CloudFormationテンプレートの検証",
+            "IAMポリシーの分析",
+            "ウェブアプリケーションをSQLインジェクションやXSSなどの攻撃から保護する"
+        ],
+        answer: 3,
+        explanation: "AWS WAF（ウェブアプリケーションファイアウォール）の主な目的は、ウェブアプリケーションをSQLインジェクション、クロスサイトスクリプティング（XSS）などの一般的なウェブの脆弱性や攻撃から保護することです。WAFを使用すると、CloudFront、Application Load Balancer、API Gateway、AppSyncなどのサービスに対するHTTP/HTTPSリクエストをフィルタリングするルールを定義できます。IPアドレス、HTTP headers、HTTPメソッド、文字列、正規表現などに基づいてトラフィックを制御できます。",
+        category: "セキュリティとコンプライアンス"
+    },
+    {
+        question: "AWSの基盤となるグローバルインフラストラクチャにとって重要な「エッジロケーション」の主な目的は何ですか？",
+        options: [
+            "データセンターの電力供給のバックアップ",
+            "AWSサポートスタッフのオフィス",
+            "Amazon CloudFrontとRoute 53のコンテンツキャッシュとDNSサービス",
+            "物理ハードウェアのストレージ施設"
+        ],
+        answer: 2,
+        explanation: "AWSのエッジロケーションの主な目的は、Amazon CloudFrontとRoute 53のコンテンツキャッシュとDNSサービスを提供することです。エッジロケーションはAWSのデータセンターよりも数が多く、世界中の主要都市に存在します。CloudFrontのキャッシュコンテンツをエンドユーザーに近い場所で配信することで、低レイテンシーでのコンテンツアクセスが可能になります。また、Route 53のDNSクエリの応答もエッジロケーションから提供されます。",
+        category: "クラウドコンセプト"
+    },
+    {
+        question: "オンプレミスデータセンターからAWSへの「リフトアンドシフト」移行アプローチとはどのようなものですか？",
+        options: [
+            "既存のアプリケーションを完全に再設計してから移行する",
+            "アプリケーションを部分的にクラウドネイティブに変換して移行する",
+            "既存のアプリケーションを最小限の変更でクラウドに移行する",
+            "オンプレミスアプリケーションとクラウドサービスのハイブリッド運用"
+        ],
+        answer: 2,
+        explanation: "「リフトアンドシフト」移行アプローチは、既存のアプリケーションを最小限の変更でクラウドに移行することを指します。このアプローチでは、アプリケーションのアーキテクチャを大きく変更せずに、基本的にそのままの状態でAWSに「持ち上げて移動する」ため、迅速な移行が可能です。ただし、クラウドネイティブの利点を最大限に活用することはできないため、長期的にはアプリケーションの最適化が必要になる場合があります。",
+        category: "クラウド移行"
+    },
+    {
+        question: "AWS Cost Explorerの主な機能は何ですか？",
+        options: [
+            "AWSリソースの設定を監査する",
+            "AWSリソースの使用パターンとコストを視覚化する",
+            "AWSサービスの機能制限を表示する",
+            "AWSサービスの最新アップデートを通知する"
+        ],
+        answer: 1,
+        explanation: "AWS Cost Explorerの主な機能は、AWSリソースの使用パターンとコストを視覚化することです。使いやすいインターフェースでコストと使用状況データを表示し、時間の経過に伴うパターンを特定し、コスト削減の機会を見つけることができます。フィルタリングやグループ化機能を使用して、サービス、アカウント、タグなどでデータを分析でき、将来のコスト予測も提供します。",
+        category: "請求と料金"
+    },
+    {
+        question: "AWS Snowball Edgeはどのような目的で使用されますか？",
+        options: [
+            "大量のデータをAWSと物理的に転送する",
+            "ネットワークエッジでのリアルタイムデータ処理",
+            "AWSリージョン間でのデータレプリケーション",
+            "EC2インスタンスのスナップショットの取得"
+        ],
+        answer: 0,
+        explanation: "AWS Snowball Edgeは、大量のデータをAWSと物理的に転送するために使用されるサービスです。高ストレージ・コンピューティング能力を持つポータブルデバイスで、高速なローカルネットワークインターフェースを使用してオンプレミスからデータを迅速に転送できます。インターネット接続が制限されている場所や、データ転送に時間やコストがかかる場合に特に有用です。また、エッジロケーションでの一部の処理機能も提供します。",
+        category: "ストレージ"
+    },
+    {
+        question: "AWSのサービスレベルアグリーメント（SLA）で対象となる一般的なメトリクスはどれですか？",
+        options: [
+            "データ転送速度",
+            "サービスの可用性",
+            "ユーザー満足度",
+            "バグ修正の速度"
+        ],
+        answer: 1,
+        explanation: "AWSのサービスレベルアグリーメント（SLA）で対象となる一般的なメトリクスは、サービスの可用性です。AWSのSLAでは、サービスが利用可能である時間の割合（例：99.99%の可用性）を約束し、この約束が満たされない場合のサービスクレジット（返金）の条件を定めています。例えば、Amazon EC2のSLAでは、単一のAZでの実行インスタンスの月間稼働率が99.99%未満の場合や、複数のAZでの実行インスタンスの月間稼働率が99.9%未満の場合にサービスクレジットが提供されます。",
+        category: "請求と料金"
+    },
+    {
+        question: "AWS Transit Gatewayの主な機能は何ですか？",
+        options: [
+            "EBSボリュームのスナップショットの作成と管理",
+            "異なるAWSアカウントのリソースへのアクセス権限の付与",
+            "複数のVPCとオンプレミスネットワークの接続を一元管理する",
+            "複数のAWSリージョン間でのデータ同期"
+        ],
+        answer: 2,
+        explanation: "AWS Transit Gatewayの主な機能は、複数のVPCとオンプレミスネットワークの接続を一元管理することです。Transit Gatewayはネットワークハブとして機能し、すべてのVPCを1つの接続ポイントにアタッチできるため、VPCピアリングの数を減らし、複雑なルーティング設定を簡素化できます。また、オンプレミスネットワークとの接続（VPN、Direct Connect）も一元管理できるようになります。",
+        category: "ネットワーキング"
+    },
+    {
+        question: "「データレジデンシー」に関連するAWSの機能として正しいものはどれですか？",
+        options: [
+            "特定のAWSリージョンでのみデータを保存するオプション",
+            "データを複数のAWSリージョンに自動的にレプリケートする機能",
+            "すべてのデータをクラウドではなくユーザーのローカル環境に保存する機能",
+            "データを特定の国のユーザーだけがアクセスできるようにする機能"
+        ],
+        answer: 0,
+        explanation: "「データレジデンシー」に関連するAWSの機能として、特定のAWSリージョンでのみデータを保存するオプションがあります。多くの国や産業には、個人データやその他の機密情報が物理的にどこに保存されるかについての規制要件があります。AWSでは、データがリージョン外に移動しないようにするために、特定のリージョンのみでデータを保存および処理するよう選択できます。サービスの中には、データを特定のリージョンに保持するためのデータレジデンシー設定を備えているものもあります。",
+        category: "セキュリティとコンプライアンス"
+    },
+    {
+        question: "AWSにおける「耐障害性（Fault Tolerance）」とは何を意味しますか？",
+        options: [
+            "すべての障害を防止する能力",
+            "基盤となるハードウェアの障害が発生してもシステムが機能し続ける能力",
+            "障害の原因を迅速に特定する能力",
+            "障害が発生した場合にユーザーに通知する能力"
+        ],
+        answer: 1,
+        explanation: "AWSにおける「耐障害性（Fault Tolerance）」とは、基盤となるハードウェアの障害が発生してもシステムが機能し続ける能力を意味します。これは、冗長性を持たせたり、自動フェイルオーバー機能を実装したりすることで達成されます。AWSでは、複数のアベイラビリティーゾーンにリソースをデプロイし、Auto Scaling、Elastic Load Balancing、Amazon RDSのマルチAZデプロイメントなどの機能を使用することで、耐障害性のあるアーキテクチャを構築できます。",
+        category: "アーキテクチャ設計"
+    },
+    {
+        question: "AWSの「スポットインスタンス」に関する説明として正しいものはどれですか？",
+        options: [
+            "AWSが提供する最も安全なインスタンスタイプ",
+            "物理的に分離された専用ハードウェア上のEC2インスタンス",
+            "AWSの未使用キャパシティを利用した低コストのEC2インスタンス",
+            "特定の時間帯にのみ利用可能なEC2インスタンス"
+        ],
+        answer: 2,
+        explanation: "AWSの「スポットインスタンス」は、AWSの未使用キャパシティを利用した低コストのEC2インスタンスです。スポットインスタンスを使用すると、オンデマンド価格に比べて最大90%のコスト削減が可能です。ただし、AWSがそのキャパシティを取り戻す必要がある場合、スポットインスタンスは中断（終了または休止）される可能性があります。そのため、バッチ処理、データ分析、CI/CDパイプラインなど、柔軟な開始と終了時間を持つワークロードに適しています。",
+        category: "コンピューティング"
+    },
+    {
+        question: "Amazon RDSで利用できるデータベースエンジンではないものはどれですか？",
+        options: [
+            "MySQL",
+            "MongoDB",
+            "PostgreSQL",
+            "Oracle"
+        ],
+        answer: 1,
+        explanation: "Amazon RDSで利用できないデータベースエンジンはMongoDBです。Amazon RDSは現在、MySQL、MariaDB、PostgreSQL、Oracle、Microsoft SQL Server、Amazon Auroraの6つのデータベースエンジンをサポートしています。MongoDBはNoSQLデータベースであり、AWSではAmazon DocumentDBというMongoDBと互換性のあるサービスで提供されています。",
+        category: "データベース"
+    },
+    {
+        question: "AWSの「オートスケーリング」機能はどのようなメトリクスに基づいて自動的にスケールできますか？",
+        options: [
+            "データベースのクエリパフォーマンスのみ",
+            "サーバーのパッチ適用ステータスのみ",
+            "CPU使用率、ネットワークトラフィック、カスタムメトリクスなど",
+            "地理的な場所のみ"
+        ],
+        answer: 2,
+        explanation: "AWSの「オートスケーリング」機能は、CPU使用率、ネットワークトラフィック、カスタムメトリクスなど、さまざまなメトリクスに基づいて自動的にスケールできます。CloudWatchアラームと連携して、定義したしきい値に基づいてスケールアウト（インスタンスの追加）またはスケールイン（インスタンスの削減）するポリシーを設定できます。また、予測可能な負荷パターンに対応するためのスケジュールに基づくスケーリングも設定できます。",
+        category: "コンピューティング"
+    },
+    {
+        question: "AWSのサービスを選択する際に「最小特権の原則」を適用するのはなぜ重要ですか？",
+        options: [
+            "コストを最小化するため",
+            "最新のサービスを使用する機会を増やすため",
+            "必要最小限のアクセス権限のみを付与してセキュリティを強化するため",
+            "サービスの数を最小化するため"
+        ],
+        answer: 2,
+        explanation: "AWSのサービスを選択する際に「最小特権の原則」を適用するのは、必要最小限のアクセス権限のみを付与してセキュリティを強化するために重要です。この原則に従うと、ユーザー、ロール、システムに対して、タスクの実行に必要な最小限の権限だけを与えます。これにより、意図しないアクセスや悪意のある行為によるリスクを軽減し、セキュリティポスチャを強化できます。AWSのIAMサービスは、この原則を実装するための詳細なアクセス制御を提供しています。",
+        category: "セキュリティとコンプライアンス"
+    },
+    {
+        question: "AWSの「タグ」に関する説明として正しいものはどれですか？",
+        options: [
+            "EC2インスタンスにのみ適用できるメタデータ",
+            "AWSリソースに割り当てられるキーと値のペア",
+            "AWSサービスの使用量を自動的に追跡するシステム",
+            "AWSリソースのバックアッププロセス"
+        ],
+        answer: 1,
+        explanation: "AWSの「タグ」は、AWSリソースに割り当てられるキーと値のペアです。タグはほとんどのAWSリソースに適用でき、リソースの整理、コスト追跡、アクセス制御などのさまざまな目的に使用できます。例えば、「環境:本番環境」や「部署:財務」などのタグを使用して、リソースの目的や所有者を特定できます。タグはコスト配分レポートでコストを分析したり、IAMポリシーでアクセス制御の条件として使用したりすることも可能です。",
+        category: "管理とガバナンス"
+    },
+    {
+        question: "AWSの「シェアード・レスポンシビリティ・モデル」において、顧客の責任とされているのはどれですか？",
+        options: [
+            "ハードウェアメンテナンス",
+            "ネットワークインフラストラクチャの保護",
+            "データの暗号化と保護",
+            "ホストオペレーティングシステムのパッチ適用（マネージドサービスの場合）"
+        ],
+        answer: 2,
+        explanation: "AWSの「シェアード・レスポンシビリティ・モデル」において、データの暗号化と保護は顧客の責任です。顧客は「クラウド内のセキュリティ」に責任を持ち、これには顧客データの保護、ゲストオペレーティングシステムの管理（更新、セキュリティパッチなど）、アプリケーションのセキュリティ、IAMの設定などが含まれます。一方、AWSは「クラウドのセキュリティ」に責任を持ち、基盤となるインフラストラクチャ（ハードウェア、ネットワーク、ファシリティなど）を保護します。マネージドサービスの場合、AWSがホストオペレーティングシステムのパッチ適用に責任を持ちます。",
+        category: "セキュリティとコンプライアンス"
+    },
+    {
+        question: "Amazon DynamoDBの主な特徴は何ですか？",
+        options: [
+            "Oracle互換のリレーショナルデータベース",
+            "高速でスケーラブルなNoSQLデータベースサービス",
+            "大規模なデータウェアハウジングソリューション",
+            "ビッグデータのためのコラム指向データベース"
+        ],
+        answer: 1,
+        explanation: "Amazon DynamoDBの主な特徴は、高速でスケーラブルなNoSQLデータベースサービスであることです。DynamoDBは完全マネージド型で、シームレスなスケーラビリティとミリ秒単位の応答時間を提供します。キーバリューストアとドキュメントデータモデルの両方をサポートし、インデックスやトランザクション、バックアップなどの高度な機能も備えています。IoT、ゲーム、モバイルアプリ、マイクロサービスなど、高いパフォーマンスとスケーラビリティを必要とするアプリケーションに適しています。",
+        category: "データベース"
+    },
+    {
+        question: "AWSの「インスタンスストア」と「EBSボリューム」の主な違いは何ですか？",
+        options: [
+            "インスタンスストアはSSDのみ、EBSはHDDのみ",
+            "インスタンスストアは自動的にバックアップされる、EBSは手動バックアップが必要",
+            "インスタンスストアは一時ストレージ、EBSは永続的なストレージ",
+            "インスタンスストアは暗号化をサポート、EBSは暗号化をサポートしない"
+        ],
+        answer: 2,
+        explanation: "AWSの「インスタンスストア」と「EBSボリューム」の主な違いは、インスタンスストアが一時ストレージであるのに対し、EBSは永続的なストレージであることです。インスタンスストアはEC2インスタンスに物理的に接続されたディスクで、インスタンスが停止または終了すると、そのデータは失われます。一方、EBSボリュームはEC2インスタンスとは独立して存在し、インスタンスが停止または終了しても、そのデータは保持されます。EBSボリュームはスナップショットを作成してバックアップでき、別のインスタンスにアタッチすることも可能です。",
+        category: "ストレージ"
+    },
+    {
+        question: "AWSのどのサービスが、使用状況に基づいて自動的にデータをより低コストのストレージ階層に移動しますか？",
+        options: [
+            "Amazon EBS",
+            "Amazon EFS",
+            "Amazon S3 Intelligent-Tiering",
+            "AWS Storage Gateway"
+        ],
+        answer: 2,
+        explanation: "Amazon S3 Intelligent-Tieringは、使用状況に基づいて自動的にデータをより低コストのストレージ階層に移動するAWSのサービスです。アクセスパターンをモニタリングし、アクセス頻度の低いオブジェクトを低頻度アクセス階層に自動的に移動することで、コストを最適化します。データにアクセスすると、そのデータは自動的に高頻度アクセス階層に戻されます。このストレージクラスは、アクセスパターンが不明または変化するデータに最適です。",
+        category: "ストレージ"
+    },
+    {
+        question: "AWSでのディザスタリカバリ戦略として「パイロットライト」アプローチはどのようなものですか？",
+        options: [
+            "本番環境とまったく同じ構成の環境を常に稼働させておく",
+            "コアコンポーネントのみを実行し、障害時に残りのコンポーネントを起動する",
+            "すべてのデータと設定を別のリージョンにバックアップするだけ",
+            "クラウドとオンプレミスの両方の環境を同時に稼働させる"
+        ],
+        answer: 1,
+        explanation: "AWSでの「パイロットライト」ディザスタリカバリアプローチは、コアコンポーネントのみを実行し、障害時に残りのコンポーネントを起動する戦略です。このアプローチでは、データベースなどの重要なコアエレメントは常に稼働していますが、アプリケーションサーバーなどの残りのインフラストラクチャは、災害が発生した場合にのみ起動されます。これにより、「ウォームスタンバイ」よりもコストを低く抑えつつ、「バックアップと復元」よりも迅速な復旧が可能になります。",
+        category: "アーキテクチャ設計"
+    },
+    {
+        question: "AWSでの「タグベース」のアクセス制御に使用されるサービスはどれですか？",
+        options: [
+            "Amazon Cognito",
+            "AWS IAM",
+            "AWS KMS",
+            "AWS Directory Service"
+        ],
+        answer: 1,
+        explanation: "AWSでの「タグベース」のアクセス制御に使用されるサービスはAWS IAM（Identity and Access Management）です。IAMポリシーでは、タグベースの条件を設定することで、特定のタグが付いたリソースにのみアクセスを許可したり、リクエストのタグに基づいてアクセスを制御したりすることができます。例えば、ユーザーに「department」タグの値が「finance」のリソースにのみアクセスを許可するようなポリシーを作成することができます。これにより、組織のニーズに合わせた柔軟なアクセス制御が可能になります。",
+        category: "セキュリティとコンプライアンス"
+    },
+    {
+        question: "AWSの「クラウドウォッチアラーム」の主な用途は何ですか？",
+        options: [
+            "AWSコンソールへの不正アクセスを検出する",
+            "メトリクスが特定のしきい値を超えた場合に通知またはアクションをトリガーする",
+            "オペレーティングシステムのセキュリティアラートを生成する",
+            "AWSのサービス停止に関する情報を提供する"
+        ],
+        answer: 1,
+        explanation: "AWSの「クラウドウォッチアラーム」の主な用途は、メトリクスが特定のしきい値を超えた場合に通知またはアクションをトリガーすることです。例えば、EC2インスタンスのCPU使用率が90%を超えた場合にEメールで通知を送信したり、Auto Scalingグループにインスタンスを追加したりするようなアラームを設定できます。CloudWatchアラームはさまざまなAWSサービスのメトリクスを監視でき、アラームの状態が変化した場合にSNS通知を送信したり、Auto ScalingやEC2アクションを実行したりできます。",
+        category: "管理とガバナンス"
+    },
+    {
+        question: "AWSのサービスで、AWSクラウドへのプライベートアクセスを提供するイントラネットとしてVPCを拡張するのはどれですか？",
+        options: [
+            "AWS VPN",
+            "Amazon Connect",
+            "AWS PrivateLink",
+            "AWS Systems Manager"
+        ],
+        answer: 2,
+        explanation: "AWS PrivateLinkは、AWSクラウドへのプライベートアクセスを提供するイントラネットとしてVPCを拡張するサービスです。PrivateLinkを使用すると、VPCエンドポイントを介してAWSサービスやパートナーサービス、自分のサービスにプライベートに接続できます。これにより、公共のインターネットを経由せずに、プライベートネットワーク内でこれらのサービスにアクセスできるようになります。トラフィックはAWSネットワーク内に留まるため、セキュリティが向上し、レイテンシーが低減します。",
+        category: "ネットワーキング"
+    },
+    {
+        question: "AWSが提供する「リザーブドキャパシティ」購入オプションがないサービスはどれですか？",
+        options: [
+            "Amazon EC2",
+            "Amazon RDS",
+            "Amazon S3",
+            "Amazon ElastiCache"
+        ],
+        answer: 2,
+        explanation: "Amazon S3はAWSが「リザーブドキャパシティ」購入オプションを提供していないサービスです。Amazon S3は純粋な従量課金モデルであり、使用した分だけ支払います。一方、Amazon EC2、Amazon RDS、Amazon ElastiCacheなどのサービスでは、1年または3年の期間で一定量のリソースをコミットすることで、大幅な割引を受けられるリザーブドインスタンスまたはリザーブドキャパシティの購入オプションが提供されています。",
+        category: "請求と料金"
+    },
+    {
+        question: "AWS Key Management Service（KMS）は主に何のために使用されますか？",
+        options: [
+            "AWSアカウントへのログインに使用する暗号化キーペアの管理",
+            "データとリソースの暗号化に使用される暗号化キーの作成と管理",
+            "AWSデータセンターへの物理的なアクセスを制御するキーの管理",
+            "AWSサポートチームがユーザーのリソースにアクセスするためのキーの管理"
+        ],
+        answer: 1,
+        explanation: "AWS Key Management Service（KMS）は、データとリソースの暗号化に使用される暗号化キーの作成と管理のために使用されます。KMSを使用すると、暗号化キーの作成、管理、制御が容易になり、さまざまなAWSサービスやアプリケーションでデータを保護できます。KMSは、キーの自動ローテーション、アクセス制御ポリシーの設定、使用状況の監査など、重要なキー管理機能を提供します。また、FIPS 140-2検証済みのハードウェアセキュリティモジュール（HSM）を使用して、キーを保護します。",
+        category: "セキュリティとコンプライアンス"
+    },
+    {
+        question: "AWSの「データ転送」料金に関する以下の記述のうち、正しいものはどれですか？",
+        options: [
+            "すべてのデータ転送は常に無料",
+            "AWSへのデータ転送（インバウンド）は通常無料",
+            "すべてのデータ転送は一律の料金",
+            "リージョン内のデータ転送のみが課金される"
+        ],
+        answer: 1,
+        explanation: "AWSの「データ転送」料金に関して、AWSへのデータ転送（インバウンド）は通常無料です。一方、AWSからのデータ転送（アウトバウンド）は通常課金されますが、同じリージョン内の異なるアベイラビリティーゾーン間のデータ転送や、同じアベイラビリティーゾーン内のデータ転送には、異なる料金が適用されます。また、転送量が増えるほど1GBあたりの料金が逓減する階層型の料金体系が適用されます。データ転送の費用は、リージョンによっても異なります。",
+        category: "請求と料金"
+    },
+    {
+        question: "AWS Elastic Beanstalkの主な目的は何ですか？",
+        options: [
+            "ネットワークトラフィックの負荷分散",
+            "大量のビッグデータの処理",
+            "Webアプリケーションのデプロイと管理の簡素化",
+            "データベースのバックアップとレプリケーション"
+        ],
+        answer: 2,
+        explanation: "AWS Elastic Beanstalkの主な目的は、Webアプリケーションのデプロイと管理の簡素化です。Elastic Beanstalkはプラットフォームとしてのサービス（PaaS）で、Java、.NET、PHP、Node.js、Python、Ruby、Goなど、一般的なプログラミング言語やアプリケーションサーバーをサポートしています。開発者はコードをアップロードするだけで、Elastic Beanstalkがキャパシティのプロビジョニング、ロードバランシング、自動スケーリング、モニタリングなどのデプロイの詳細を自動的に処理します。",
+        category: "コンピューティング"
+    },
+    {
+        question: "AWSの「プライベートサブネット」と「パブリックサブネット」の主な違いは何ですか？",
+        options: [
+            "プライベートサブネットはVPC内、パブリックサブネットはVPC外に配置される",
+            "プライベートサブネットのリソースはインターネットと直接通信できないが、パブリックサブネットのリソースはインターネットゲートウェイを介して通信できる",
+            "プライベートサブネットは一つのAZ内、パブリックサブネットは複数のAZにまたがる",
+            "プライベートサブネットは暗号化されるが、パブリックサブネットは暗号化されない"
+        ],
+        answer: 1,
+        explanation: "AWSの「プライベートサブネット」と「パブリックサブネット」の主な違いは、プライベートサブネットのリソースはインターネットと直接通信できないが、パブリックサブネットのリソースはインターネットゲートウェイを介して通信できることです。両方のサブネットタイプはVPC内に存在しますが、パブリックサブネットはルートテーブルにインターネットゲートウェイへのルートがあり、リソースにはパブリックIPアドレスが割り当てられます。一方、プライベートサブネットにはインターネットゲートウェイへの直接のルートがなく、インターネットアクセスが必要な場合はNATゲートウェイまたはNATインスタンスを使用します。",
+        category: "ネットワーキング"
+    },
+    {
+        question: "AWS CloudFormationの主な利点は何ですか？",
+        options: [
+            "インフラストラクチャをコードとして管理し、一貫した方法でプロビジョニングできる",
+            "AWSコンソールへのアクセスを単純化する",
+            "AWSリソースの使用状況をリアルタイムで監視する",
+            "クラウドリソースをプロビジョニングするための人的リソースを提供する"
+        ],
+        answer: 0,
+        explanation: "AWS CloudFormationの主な利点は、インフラストラクチャをコードとして管理し、一貫した方法でプロビジョニングできることです。CloudFormationを使用すると、AWSリソースを記述するためのJSONまたはYAML形式のテンプレートを作成でき、それを使用して複数のリージョンやアカウントにわたって同じ環境を一貫してデプロイできます。これにより、バージョン管理、インフラストラクチャの変更の追跡、環境の複製が容易になります。また、スタックの削除時にはすべてのリソースが適切にクリーンアップされるため、リソース管理も簡素化されます。",
+        category: "管理とガバナンス"
+    },
+    {
+        question: "AWS Snowmobileは何のために設計されていますか？",
+        options: [
+            "現場でのデータ処理用の移動式コンピューティングリソース",
+            "エクサバイト規模のデータをAWSに物理的に転送するための輸送ソリューション",
+            "AWSデータセンター間でのハードウェアの物理的な移動",
+            "緊急時のバックアップ電源の提供"
+        ],
+        answer: 1,
+        explanation: "AWS Snowmobileは、エクサバイト規模のデータをAWSに物理的に転送するための輸送ソリューションとして設計されています。Snowmobileは45フィートの長さのトレーラーであり、最大100ペタバイトのデータを収容できます。大規模なデータセンターの移行、大規模なメディアライブラリの移動、または膨大な量の科学データの転送など、極めて大量のデータを効率的にAWSクラウドに移行するために使用されます。データの安全を確保するために、物理的なセキュリティ、暗号化、GPSトラッキングなどの機能が備わっています。",
+        category: "ストレージ"
+    },
+    {
+        question: "Amazon Connectの主な機能は何ですか？",
+        options: [
+            "クラウドベースのコンタクトセンターサービス",
+            "AWS Direct Connectの代替サービス",
+            "オンプレミスネットワークとAWS間の高速接続",
+            "IoTデバイスの接続と管理"
+        ],
+        answer: 0,
+        explanation: "Amazon Connectの主な機能は、クラウドベースのコンタクトセンターサービスを提供することです。Connectはセルフサービスの設定が可能で、顧客サービスの問い合わせを管理するためのクラウドベースのコンタクトセンターを作成できます。従量課金制で、専用のハードウェアやソフトウェアが不要です。音声応答（IVR）、通話の自動ルーティング、リアルタイムおよび履歴的な分析機能などを提供し、Amazon Lexとの統合によって自然言語での対話も可能です。",
+        category: "カスタマーエンゲージメント"
+    },
+    {
+        question: "AWS Control Towerの主な目的は何ですか？",
+        options: [
+            "複数のAWSアカウントを一元管理するためのランディングゾーンを提供する",
+            "AWSコンソールへのアクセスを監視および制御する",
+            "クラウドリソースのパフォーマンスを分析する",
+            "オンプレミスデータセンターからAWSへの移行を管理する"
+        ],
+        answer: 0,
+        explanation: "AWS Control Towerの主な目的は、複数のAWSアカウントを一元管理するためのランディングゾーンを提供することです。Control Towerは、AWS Organizations、AWS Config、AWS CloudTrailなどのサービスを自動的に設定し、セキュリティとコンプライアンスのためのガードレールを実装します。これにより、企業は安全でコンプライアンスに準拠したマルチアカウント環境を簡単に設定および管理できます。Control Towerは、新しいAWSアカウントのプロビジョニングを自動化し、ベストプラクティスに基づいてそれらを設定します。",
+        category: "管理とガバナンス"
+    },
+    {
+        question: "Amazon Athenaの主な特徴は何ですか？",
+        options: [
+            "リレーショナルデータベース管理システム",
+            "サーバーレスのインタラクティブなクエリサービス",
+            "コンテナオーケストレーションプラットフォーム",
+            "フルマネージドのデータウェアハウス"
+        ],
+        answer: 1,
+        explanation: "Amazon Athenaの主な特徴は、サーバーレスのインタラクティブなクエリサービスであることです。Athenaを使用すると、標準SQLを使用してAmazon S3に保存されたデータを直接分析できます。サーバーのプロビジョニングや管理は不要で、使用したクエリごとにのみ料金が発生します。Athenaは、CSV、JSON、ORC、Parquet、Avroなどの様々なフォーマットのデータを分析でき、ExternalTable構文を使用してAWS Glueデータカタログと統合することで、メタデータリポジトリを作成できます。",
+        category: "分析"
+    },
+    {
+        question: "AWSの「セキュリティグループ」と「ネットワークACL」の主な違いは何ですか？",
+        options: [
+            "セキュリティグループはインスタンスレベルで動作し、ネットワークACLはサブネットレベルで動作する",
+            "セキュリティグループはインバウンドトラフィックのみを制御し、ネットワークACLはアウトバウンドトラフィックのみを制御する",
+            "セキュリティグループはステートレスで、ネットワークACLはステートフル",
+            "セキュリティグループはVPC内でのみ機能し、ネットワークACLはVPC間で機能する"
+        ],
+        answer: 0,
+        explanation: "AWSの「セキュリティグループ」と「ネットワークACL」の主な違いは、セキュリティグループはインスタンスレベルで動作し、ネットワークACLはサブネットレベルで動作することです。セキュリティグループはステートフルで、許可されたインバウンドトラフィックの応答は、アウトバウンドルールに関係なく許可されます。一方、ネットワークACLはステートレスで、インバウンドとアウトバウンドのトラフィックを個別に評価します。また、セキュリティグループは「許可」ルールのみをサポートしますが、ネットワークACLは「許可」と「拒否」の両方のルールをサポートしています。",
+        category: "セキュリティとコンプライアンス"
+    },
+    {
+        question: "AWS Organizationsの「サービスコントロールポリシー（SCP）」の主な目的は何ですか？",
+        options: [
+            "AWSサービスの使用状況をモニタリングする",
+            "組織内のAWSアカウントのアクセス許可を一元管理する",
+            "AWSサービスのセキュリティ設定を自動化する",
+            "異なるAWSアカウント間でのリソース共有を可能にする"
+        ],
+        answer: 1,
+        explanation: "AWS Organizationsの「サービスコントロールポリシー（SCP）」の主な目的は、組織内のAWSアカウントのアクセス許可を一元管理することです。SCPを使用すると、組織の管理者は、組織内のアカウントで使用できるサービスとアクションを制限できます。これにより、組織全体のセキュリティ制御を強化し、コンプライアンス要件を満たすことができます。SCPは、IAMポリシーと同様の形式を使用しますが、IAMエンティティではなく、AWSアカウント全体に適用されます。",
+        category: "管理とガバナンス"
+    },
+    {
+        question: "AWS Trusted Advisorが提供するチェックのカテゴリに含まれていないものはどれですか？",
+        options: [
+            "コスト最適化",
+            "パフォーマンス",
+            "セキュリティ",
+            "データベース管理"
+        ],
+        answer: 3,
+        explanation: "AWS Trusted Advisorが提供するチェックのカテゴリには、コスト最適化、パフォーマンス、セキュリティ、耐障害性、サービス制限の5つがあります。「データベース管理」はTrusted Advisorのチェックカテゴリには含まれていません。Trusted Advisorは、AWSの環境を検査し、ベストプラクティスに従うための推奨事項を提供するサービスで、コストの削減、システムパフォーマンスの向上、セキュリティの強化、耐障害性の向上を支援します。",
+        category: "管理とガバナンス"
+    },
+    {
+        question: "「AWS無料利用枠」の特徴として正しいものはどれですか？",
+        options: [
+            "すべてのAWSサービスが無料で利用できる",
+            "常に無料のサービス、12ヶ月間無料のサービス、トライアルのサービスがある",
+            "AWS認定資格を持つユーザーのみが利用できる",
+            "AWSパートナーネットワークのメンバーのみが利用できる"
+        ],
+        answer: 1,
+        explanation: "「AWS無料利用枠」の特徴として正しいのは、常に無料のサービス、12ヶ月間無料のサービス、トライアルのサービスがあることです。「常に無料」のカテゴリには、Amazon DynamoDBの25GBのストレージや、AWS Lambdaの毎月100万件のリクエストなどが含まれます。「12ヶ月間無料」のカテゴリには、Amazon EC2の月間750時間やAmazon S3の5GBのストレージなどがあります。「トライアル」カテゴリには、Amazon Inspectorや Amazon Lightsailなど、短期間の無料トライアルが提供されるサービスが含まれます。",
+        category: "請求と料金"
+    },
+    {
+        question: "AWS Lambda関数の実行時間制限はどれですか？",
+        options: [
+            "5分",
+            "15分",
+            "1時間",
+            "無制限"
+        ],
+        answer: 1,
+        explanation: "AWS Lambda関数の実行時間制限は15分（900秒）です。この制限を超える長時間実行されるタスクは、複数のLambda関数に分割するか、Amazon EC2などの他のサービスで実行する必要があります。Lambda関数はサーバーレスコンピューティングの一種で、コードを実行するためのサーバーをプロビジョニングまたは管理する必要がなく、実際に消費したコンピューティング時間に対してのみ料金が発生します。",
+        category: "コンピューティング"
+    },
+    {
+        question: "AWSのどのサービスが、データベースワークロードのモニタリングとチューニングを支援しますか？",
+        options: [
+            "AWS Database Migration Service",
+            "Amazon RDS Performance Insights",
+            "Amazon QuickSight",
+            "AWS Glue"
+        ],
+        answer: 1,
+        explanation: "Amazon RDS Performance Insightsは、データベースワークロードのモニタリングとチューニングを支援するAWSのサービスです。Performance Insightsを使用すると、データベースのパフォーマンスを簡単に評価し、問題に影響を与えている要因を特定できます。直感的なダッシュボードでCPU使用率、データベースロード、待機イベント、上位のSQLクエリなどを視覚化し、パフォーマンスの問題を迅速に診断できます。Amazon RDS、Aurora、Amazon DocumentDBなどのデータベースサービスで利用可能です。",
+        category: "データベース"
+    },
+    {
+        question: "AWS Marketplaceを通じて主に提供されるものは何ですか？",
+        options: [
+            "AWSサービスの使用に関するトレーニングと認定",
+            "サードパーティベンダーによるソフトウェア製品とサービス",
+            "AWSが提供するハードウェア製品",
+            "AWSパートナーネットワークメンバーシップ"
+        ],
+        answer: 1,
+        explanation: "AWS Marketplaceを通じて主に提供されるのは、サードパーティベンダーによるソフトウェア製品とサービスです。AWS Marketplaceは、お客様がAWS上で実行されるサードパーティのソフトウェアやサービスを簡単に検索、比較、すぐにデプロイできるオンラインストアです。セキュリティ、ネットワーク、ストレージ、機械学習、ビジネスインテリジェンス、データベース、DevOpsなど、さまざまなカテゴリの製品が提供されています。製品は従量課金制または年間サブスクリプションモデルで購入でき、AWSの請求書に統合されます。",
+        category: "クラウドコンセプト"
+    },
+    {
+        question: "AWSでマネージドブロックチェーンサービスを提供するのはどれですか？",
+        options: [
+            "Amazon Quantum Ledger Database (QLDB)",
+            "Amazon DynamoDB",
+            "Amazon Neptune",
+            "Amazon ElastiCache"
+        ],
+        answer: 0,
+        explanation: "Amazon Quantum Ledger Database (QLDB)は、AWSが提供するマネージドブロックチェーンサービスの一つです。QLDBは完全に管理された台帳データベースで、信頼できる中央機関が所有する透明性のある変更不可能なトランザクションログを提供します。すべてのデータ変更の完全で検証可能な履歴を維持するように設計されており、金融、医療、物流など、監査可能なデータ追跡が重要な用途に適しています。また、AWSはHyperledger FabricやEthereumをサポートするAmazon Managed Blockchainも提供しています。",
+        category: "データベース"
+    },
+    {
+        question: "AWS Compute Optimizerの主な目的は何ですか？",
+        options: [
+            "コンピューティングリソースの使用状況を分析し、最適なサイズと設定を推奨する",
+            "コンピュータービジョン機能を提供する",
+            "コンピューティングクラスターを自動的に管理する",
+            "カスタムコンピューティングチップを設計する"
+        ],
+        answer: 0,
+        explanation: "AWS Compute Optimizerの主な目的は、コンピューティングリソースの使用状況を分析し、最適なサイズと設定を推奨することです。機械学習を使用して、EC2インスタンス、Auto Scalingグループ、EBSボリューム、Lambdaなどのリソースの使用パターンを分析し、オーバープロビジョニングやアンダープロビジョニングを減らすための推奨事項を提供します。これにより、パフォーマンスを向上させながらコストを削減できます。",
+        category: "管理とガバナンス"
+    },
+    {
+        question: "AWSの「コストと使用状況レポート」の主な用途は何ですか？",
+        options: [
+            "AWSサービスの使用制限を設定する",
+            "詳細なコスト追跡とインスタンスの使用状況を提供する",
+            "セキュリティインシデントを監視して報告する",
+            "データセンター内の物理的なリソース使用状況を追跡する"
+        ],
+        answer: 1,
+        explanation: "AWSの「コストと使用状況レポート」の主な用途は、詳細なコスト追跡とインスタンスの使用状況を提供することです。このレポートには、AWSの請求情報の最も包括的なセットが含まれており、利用可能な最も詳細なレベルでコストと使用状況データを追跡できます。製品、使用タイプ、オペレーション、タグなどでフィルタリングでき、AWSの使用を詳細に理解して最適化するのに役立ちます。レポートはCSV形式でS3バケットに配信され、Athenaなどのサービスで分析できます。",
+        category: "請求と料金"
+    },
+    {
+        question: "AWS Systems Managerの主な機能ではないものはどれですか？",
+        options: [
+            "アプリケーションとインフラストラクチャの管理の自動化",
+            "EC2インスタンスやオンプレミスサーバーのリモート管理",
+            "パラメータストアを使用した設定データの管理",
+            "仮想ネットワークの作成と管理"
+        ],
+        answer: 3,
+        explanation: "AWS Systems Managerの主な機能ではないのは、「仮想ネットワークの作成と管理」です。これはAmazon VPCの主な機能です。AWS Systems Managerは、AWSリソースを管理するための統合インターフェースを提供するサービスで、アプリケーションとインフラストラクチャの管理の自動化、EC2インスタンスやオンプレミスサーバーのリモート管理、パラメータストアを使用した設定データの管理などの機能を提供します。その他、パッチ管理、インベントリ収集、コンプライアンス監視、自動化などの機能もあります。",
+        category: "管理とガバナンス"
+    },
+    {
+        question: "AWS Data Exchangeは主に何のために使用されますか？",
+        options: [
+            "AWS内のデータベース間でデータを安全に転送するため",
+            "セキュアなアプリケーション間の通信を確立するため",
+            "サードパーティのデータ製品を見つけて購読するため",
+            "異なるAWSアカウント間でデータを共有するため"
+        ],
+        answer: 2,
+        explanation: "AWS Data Exchangeは、サードパーティのデータ製品を見つけて購読するために使用されます。このサービスは、クラウド内でファイル、テーブル、APIベースのデータセットなどのデータ製品を簡単に見つけ、購読、および共有できるようにします。データプロバイダーはAWS Data Exchangeを通じてデータを公開し、AWSのお客様はそれらのデータセットを検索して購読できます。購読後、データはお客様のAWSアカウントで使用できるようになり、S3、Redshift、SageMaker、EMRなどのAWSサービスを使用して分析できます。",
+        category: "分析"
+    },
+    {
+        question: "AWS Resource Access Manager（RAM）の主な目的は何ですか？",
+        options: [
+            "AWSリソースの使用状況をモニタリングする",
+            "AWSのコンピューティングリソースを効率的に割り当てる",
+            "AWS組織内の異なるアカウント間でリソースを共有する",
+            "AWSリソースにアクセスするための一時的な認証情報を提供する"
+        ],
+        answer: 2,
+        explanation: "AWS Resource Access Manager（RAM）の主な目的は、AWS組織内の異なるアカウント間でリソースを共有することです。RAMを使用すると、VPCサブネット、Transit Gateway、Route 53解決ルール、Aurora DB クラスターなどのリソースを複数のAWSアカウントで共有できます。これにより、重複したリソースを作成する必要がなくなり、運用オーバーヘッドとコストを削減できます。また、リソース共有を中央で管理し、共有リソースへのアクセスを細かく制御することもできます。",
+        category: "管理とガバナンス"
+    },
+    {
+        question: "Amazon Cognito の主な機能は何ですか？",
+        options: [
+            "AWSリソースへのプログラムによるアクセスの管理",
+            "ウェブおよびモバイルアプリケーションのユーザー認証と認可",
+            "多要素認証デバイスの提供",
+            "AWSコンソールへのシングルサインオン"
+        ],
+        answer: 1,
+        explanation: "Amazon Cognito の主な機能は、ウェブおよびモバイルアプリケーションのユーザー認証と認可です。Cognitoは、ユーザープール（ユーザーディレクトリ）とIDプール（一時的なAWS認証情報）の2つの主要なコンポーネントを提供します。ユーザーは自分のユーザー名とパスワードでサインインするか、Facebook、Google、Amazonなどのサードパーティーのアイデンティティプロバイダーを通じてサインインできます。また、多要素認証、カスタマイズ可能なUIを持つホスト型認証ページ、ソーシャルIDプロバイダーとの統合などの機能も提供します。",
+        category: "セキュリティとコンプライアンス"
+    },
+    {
+        question: "AWSの「グローバルアクセラレータ」の主な目的は何ですか？",
+        options: [
+            "コンテンツ配信を高速化するためのCDNサービス",
+            "AWSグローバルネットワークを利用してネットワークパフォーマンスを向上させる",
+            "データベースクエリの応答時間を短縮する",
+            "コンピューティングインスタンスの起動を高速化する"
+        ],
+        answer: 1,
+        explanation: "AWSの「グローバルアクセラレータ」の主な目的は、AWSグローバルネットワークを利用してネットワークパフォーマンスを向上させることです。グローバルアクセラレータは、インターネットの輻輳を回避し、AWSのプライベートネットワークバックボーンを介してトラフィックをルーティングすることで、アプリケーションのパフォーマンスを最大60%向上させることができます。固定IPアドレスを提供し、ロードバランサーやEC2インスタンスなどのエンドポイントにトラフィックを転送します。また、ヘルスチェックとフェイルオーバーも提供し、アプリケーションの可用性を向上させます。",
+        category: "ネットワーキング"
+    },
+    {
+        question: "AWSのVPC（Virtual Private Cloud）のCIDRブロックの最大サイズはどれですか？",
+        options: [
+            "/16",
+            "/24",
+            "/28",
+            "/8"
+        ],
+        answer: 0,
+        explanation: "AWSのVPC（Virtual Private Cloud）のCIDRブロックの最大サイズは/16（65,536個のIPアドレス）です。VPCを作成する際は、RFC 1918で指定されたプライベートIPv4アドレス範囲からCIDRブロックを指定します（10.0.0.0/8、172.16.0.0/12、192.168.0.0/16）。VPCのCIDRブロックは/16から/28までの範囲で指定でき、後から変更することはできません。また、VPC内のサブネットのCIDRブロックは、VPCのCIDRブロック内に収まる必要があります。",
+        category: "ネットワーキング"
+    },
+    {
+        question: "AWS Security Hub の主な機能は何ですか？",
+        options: [
+            "AWSアカウントのセキュリティアラートと推奨事項を包括的に管理する",
+            "AWSコンソールへの安全なアクセスを提供する",
+            "機密データの暗号化と保護",
+            "マルウェア検出と削除"
+        ],
+        answer: 0,
+        explanation: "AWS Security Hub の主な機能は、AWSアカウントのセキュリティアラートと推奨事項を包括的に管理することです。Security Hubは、複数のAWSサービスや統合されたサードパーティ製品からセキュリティデータを自動的に収集し、セキュリティの傾向を分析し、優先度の高い問題を特定します。また、AWS基本的なセキュリティのベストプラクティスやさまざまな業界標準に対するコンプライアンスをチェックするセキュリティ標準も提供します。Security Hubは、GuardDuty、Inspector、Macie、IAM Access Analyzer、Firewallなどの多くのAWSセキュリティサービスと統合されています。",
+        category: "セキュリティとコンプライアンス"
+    },
+    {
+        question: "Amazon Elastic Container Registry (ECR)の主な用途は何ですか？",
+        options: [
+            "コンテナイメージを保存、管理、デプロイするためのレジストリ",
+            "データベースレコードを登録して追跡するためのサービス",
+            "ドメイン名を登録するためのサービス",
+            "IAMユーザーとグループを登録するためのディレクトリ"
+        ],
+        answer: 0,
+        explanation: "Amazon Elastic Container Registry (ECR)の主な用途は、コンテナイメージを保存、管理、デプロイするためのレジストリです。ECRはフルマネージド型のDockerコンテナレジストリで、開発者がコンテナイメージを簡単に保存、管理、デプロイできるようにします。ECRはAmazon ECS、Amazon EKSなどのAWSのコンテナオーケストレーションサービスと統合されており、IAMを使用した認証、暗号化、リポジトリポリシーなどのセキュリティ機能も提供します。",
+        category: "コンピューティング"
+    },
+    {
+        question: "AWSでは、個々のサービスに対するアクセス許可を制御するためにどのようなメカニズムを使用しますか？",
+        options: [
+            "セキュリティグループ",
+            "IAMポリシー",
+            "VPCエンドポイント",
+            "クライアント証明書"
+        ],
+        answer: 1,
+        explanation: "AWSでは、個々のサービスに対するアクセス許可を制御するためにIAMポリシーを使用します。IAM（Identity and Access Management）ポリシーは、ユーザー、グループ、ロールなどのIAMアイデンティティにアタッチされるJSON形式のドキュメントで、特定のAWSサービスやリソースに対する許可または拒否するアクションを指定します。ポリシーには、Effect（許可/拒否）、Action（許可/拒否するAPI操作）、Resource（対象リソース）などの要素があり、必要に応じて条件を指定することも可能です。",
+        category: "セキュリティとコンプライアンス"
+    },
+    {
+        question: "AWS CloudTrailの主なユースケースではないものはどれですか？",
+        options: [
+            "セキュリティ分析と監査",
+            "リソース変更の追跡",
+            "運用上の問題のトラブルシューティング",
+            "アプリケーションのパフォーマンス最適化"
+        ],
+        answer: 3,
+        explanation: "AWS CloudTrailの主なユースケースではないのは、アプリケーションのパフォーマンス最適化です。CloudTrailは主に、AWSアカウント内のAPIアクティビティを記録するサービスで、「誰が」「何を」「いつ」「どこで」行ったかを追跡します。セキュリティ分析と監査（不正な活動の検出など）、リソース変更の追跡（誰がいつリソースを変更したかなど）、運用上の問題のトラブルシューティング（API呼び出しの失敗理由の特定など）に使用されます。アプリケーションのパフォーマンス最適化には、Amazon CloudWatchのようなモニタリングサービスが適しています。",
+        category: "管理とガバナンス"
+    },
+    {
+        question: "AWS Directory Serviceの主な機能は何ですか？",
+        options: [
+            "AWSアカウント内のリソースをカタログ化する",
+            "Microsoft Active Directoryとの互換性を提供する",
+            "S3バケット内のファイルを整理する",
+            "CloudFormationテンプレートのバージョンを管理する"
+        ],
+        answer: 1,
+        explanation: "AWS Directory Serviceの主な機能は、Microsoft Active Directoryとの互換性を提供することです。このサービスを使用すると、ディレクトリ対応アプリケーションをAWSクラウドで実行したり、AWS上のリソースとオンプレミスのMicrosoft Active Directoryを接続したりできます。AWS Directory Serviceには、AWS Managed Microsoft AD、Simple AD、AD Connector、Amazon Cloud Directoryなどのオプションがあり、さまざまなユースケースに対応できます。これにより、ユーザー、グループ、デバイスの管理、シングルサインオン、グループポリシーなどの機能が提供されます。",
+        category: "セキュリティとコンプライアンス"
+    },
+    {
+        question: "AWSの「Elastic」という用語が示す主な特性は何ですか？",
+        options: [
+            "伸縮自在で、需要に応じて容量を増減できる",
+            "物理的に伸縮するハードウェアを使用している",
+            "常に最低限のコストで運用できる",
+            "障害に対して弾力性があり、自動的に復旧する"
+        ],
+        answer: 0,
+        explanation: "AWSの「Elastic」という用語が示す主な特性は、伸縮自在で、需要に応じて容量を増減できることです。この特性により、必要なときに必要な分だけリソースをプロビジョニングし、使用しなくなったらリリースすることができます。例えば、Amazon EC2（Elastic Compute Cloud）、Elastic Load Balancing、Amazon Elastic Block Store（EBS）などのサービス名に「Elastic」が含まれています。この柔軟性により、従来の固定インフラストラクチャでよくある過剰プロビジョニングや容量不足の問題を解決できます。",
+        category: "クラウドコンセプト"
+    }
+];
+
+        // アプリケーションの状態
+        let currentQuizData = [];
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let selectedCategory = "all";
+        let timer;
+        let timerSeconds = 0;
+        let bookmarkedQuestions = [];
+        let categoryScores = {};
+        let incorrectAnswers = [];
+
+        // DOMエレメントを取得
+        const quizContainer = document.getElementById('quizContainer');
+        const resultsContainer = document.getElementById('resultsContainer');
+        const questionText = document.getElementById('questionText');
+        const options = document.getElementById('options');
+        const submitButton = document.getElementById('submitButton');
+        const nextButton = document.getElementById('nextButton');
+        const explanation = document.getElementById('explanation');
+        const currentQuestionSpan = document.getElementById('currentQuestion');
+        const totalQuestionsSpan = document.getElementById('totalQuestions');
+        const correctAnswersSpan = document.getElementById('correctAnswers');
+        const progressBar = document.getElementById('progressBar');
+        const finalScoreSpan = document.getElementById('finalScore');
+        const totalScoreSpan = document.getElementById('totalScore');
+        const restartButton = document.getElementById('restartButton');
+        const reviewButton = document.getElementById('reviewButton');
+        const reviewList = document.getElementById('reviewList');
+        const bookmarkButton = document.getElementById('bookmarkButton');
+        const bookmarkedIndicator = document.getElementById('bookmarkedIndicator');
+        const bookmarksPanel = document.getElementById('bookmarksPanel');
+        const bookmarksList = document.getElementById('bookmarksList');
+        const showBookmarksButton = document.getElementById('showBookmarksButton');
+        const timerElement = document.getElementById('timer');
+        const categoryScoresElement = document.getElementById('categoryScores');
+
+        // カテゴリーフィルターの設定
+        const filterOptions = document.querySelectorAll('.filter-option');
+        filterOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                filterOptions.forEach(opt => opt.classList.remove('active'));
+                option.classList.add('active');
+                selectedCategory = option.getAttribute('data-category');
+                restartQuiz();
+            });
+        });
+
+        // クイズを初期化する関数
+        function initializeQuiz() {
+            // カテゴリーによってデータをフィルタリング
+            currentQuizData = selectedCategory === "all" 
+                ? [...quizData] 
+                : quizData.filter(q => q.category === selectedCategory);
+            
+            // ランダムに並べ替え
+            currentQuizData = shuffleArray(currentQuizData);
+            
+            // クイズの状態をリセット
+            currentQuestionIndex = 0;
+            score = 0;
+            incorrectAnswers = [];
+            categoryScores = {};
+            
+            // カテゴリーごとのスコアを初期化
+            currentQuizData.forEach(q => {
+                if (!categoryScores[q.category]) {
+                    categoryScores[q.category] = {
+                        total: 0,
+                        correct: 0
+                    };
+                }
+                categoryScores[q.category].total++;
+            });
+            
+            // UI更新
+            totalQuestionsSpan.textContent = currentQuizData.length;
+            correctAnswersSpan.textContent = score;
+            loadQuestion();
+            startTimer();
+            
+            // 表示の切り替え
+            quizContainer.style.display = 'block';
+            resultsContainer.style.display = 'none';
+            
+            // ブックマークパネルを非表示
+            bookmarksPanel.style.display = 'none';
+        }
+
+        // 配列をランダムに並べ替える関数
+        function shuffleArray(array) {
+            const newArray = [...array];
+            for (let i = newArray.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+            }
+            return newArray;
+        }
+
+        // タイマーを開始する関数
+        function startTimer() {
+            timerSeconds = 0;
+            clearInterval(timer);
+            timer = setInterval(() => {
+                timerSeconds++;
+                const hours = Math.floor(timerSeconds / 3600);
+                const minutes = Math.floor((timerSeconds % 3600) / 60);
+                const seconds = timerSeconds % 60;
+                timerElement.textContent = `時間: ${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            }, 1000);
+        }
+
+        // 質問を読み込む関数
+        function loadQuestion() {
+            const currentQuestion = currentQuizData[currentQuestionIndex];
+            questionText.textContent = currentQuestion.question;
+            
+            // 難易度表示を設定
+            // difficultyIndicator.textContent = getDifficultyLabel(currentQuestion.difficulty);
+            // difficultyIndicator.className = 'difficulty-indicator ' + currentQuestion.difficulty;
+            
+            // ブックマーク状態を更新
+            updateBookmarkStatus();
+            
+            options.innerHTML = '';
+            currentQuestion.options.forEach((option, index) => {
+                const optionElement = document.createElement('div');
+                optionElement.classList.add('option');
+                optionElement.textContent = option;
+                optionElement.dataset.index = index;
+                optionElement.addEventListener('click', selectOption);
+                options.appendChild(optionElement);
+            });
+            
+            // 進捗表示を更新
+            currentQuestionSpan.textContent = currentQuestionIndex + 1;
+            const progressPercentage = ((currentQuestionIndex + 1) / currentQuizData.length) * 100;
+            progressBar.style.width = `${progressPercentage}%`;
+            
+            // 説明をリセット
+            explanation.style.display = 'none';
+            explanation.textContent = '';
+            
+            // ボタンの状態をリセット
+            submitButton.disabled = true;
+            submitButton.style.display = 'block';
+            nextButton.style.display = 'none';
+        }
+
+        // 難易度ラベルを取得する関数
+        function getDifficultyLabel(difficulty) {
+            switch(difficulty) {
+                case 'easy': return '簡単';
+                case 'medium': return '普通';
+                case 'hard': return '難しい';
+                default: return '';
+            }
+        }
+
+        // ブックマークの状態を更新する関数
+        function updateBookmarkStatus() {
+            const currentQuestion = currentQuizData[currentQuestionIndex];
+            const isBookmarked = bookmarkedQuestions.some(q => q.question === currentQuestion.question);
+            
+            if (isBookmarked) {
+                bookmarkedIndicator.style.display = 'inline';
+            } else {
+                bookmarkedIndicator.style.display = 'none';
+            }
+        }
+
+        // オプションを選択する関数
+        function selectOption(e) {
+            // すでに送信済みの場合は何もしない
+            if (submitButton.style.display === 'none') return;
+            
+            const options = document.querySelectorAll('.option');
+            options.forEach(option => {
+                option.classList.remove('selected');
+            });
+            
+            e.target.classList.add('selected');
+            submitButton.disabled = false;
+        }
+
+        // 回答を送信する関数
+        function submitAnswer() {
+            const selectedOption = document.querySelector('.option.selected');
+            if (!selectedOption) return;
+            
+            const selectedIndex = parseInt(selectedOption.dataset.index);
+            const currentQuestion = currentQuizData[currentQuestionIndex];
+            
+            const options = document.querySelectorAll('.option');
+            options.forEach((option, index) => {
+                if (index === currentQuestion.answer) {
+                    option.classList.add('correct');
+                } else if (index === selectedIndex) {
+                    option.classList.add('incorrect');
+                }
+            });
+            
+            // 正誤判定
+            if (selectedIndex === currentQuestion.answer) {
+                score++;
+                correctAnswersSpan.textContent = score;
+                categoryScores[currentQuestion.category].correct++;
+            } else {
+                incorrectAnswers.push({
+                    question: currentQuestion.question,
+                    userAnswer: currentQuestion.options[selectedIndex],
+                    correctAnswer: currentQuestion.options[currentQuestion.answer],
+                    explanation: currentQuestion.explanation
+                });
+            }
+            
+            // 説明を表示
+            explanation.textContent = currentQuestion.explanation;
+            explanation.style.display = 'block';
+            
+            // ボタンの表示を切り替え
+            submitButton.style.display = 'none';
+            nextButton.style.display = 'block';
+        }
+
+        // 次の質問に進む関数
+        function nextQuestion() {
+            currentQuestionIndex++;
+            
+            if (currentQuestionIndex < currentQuizData.length) {
+                loadQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        // 結果を表示する関数
+        function showResults() {
+            clearInterval(timer);
+            quizContainer.style.display = 'none';
+            resultsContainer.style.display = 'block';
+            
+            finalScoreSpan.textContent = score;
+            totalScoreSpan.textContent = currentQuizData.length;
+            
+            // カテゴリー別スコアを表示
+            categoryScoresElement.innerHTML = '';
+            Object.keys(categoryScores).forEach(category => {
+                const { correct, total } = categoryScores[category];
+                const percentage = total > 0 ? (correct / total * 100).toFixed(1) : 0;
+                
+                const categoryScore = document.createElement('div');
+                categoryScore.classList.add('category-score');
+                
+                const categoryName = getCategoryName(category);
+                categoryScore.innerHTML = `
+                    <div>${categoryName}: ${correct}/${total} (${percentage}%)</div>
+                    <div class="category-score-bar">
+                        <div class="category-score-progress" style="width: ${percentage}%"></div>
+                    </div>
+                `;
+                
+                categoryScoresElement.appendChild(categoryScore);
+            });
+        }
+
+        // カテゴリー名を取得する関数
+        function getCategoryName(category) {
+            const categoryMap = {
+                "コンピューティング":"コンピューティング",
+                "ストレージ":"ストレージ",
+                "データベース":"データベース",
+                "セキュリティとコンプライアンス":"セキュリティとコンプライアンス",
+                "アーキテクチャ設計":"アーキテクチャ設計", 
+                "クラウドコンセプト":"クラウドコンセプト",
+                "ネットワーキング": "ネットワーキング",
+                "管理とガバナンス": "管理とガバナンス",
+                "請求と料金": "請求と料金",
+                "アプリケーション統合": "アプリケーション統合",
+                "クラウド移行": "クラウド移行",
+                "カスタマーエンゲージメント": "カスタマーエンゲージメント",
+                "分析": "分析"
+            };
+            
+            return categoryMap[category] || category;
+        }
+
+        // クイズを再開する関数
+        function restartQuiz() {
+            initializeQuiz();
+        }
+
+        // 間違えた問題を表示する関数
+        function showIncorrectAnswers() {
+            reviewList.style.display = 'block';
+            reviewList.innerHTML = '';
+            
+            if (incorrectAnswers.length === 0) {
+                reviewList.innerHTML = '<p>間違えた問題はありません。おめでとうございます！</p>';
+                return;
+            }
+            
+            incorrectAnswers.forEach((item, index) => {
+                const reviewItem = document.createElement('div');
+                reviewItem.classList.add('review-item', 'incorrect-review');
+                reviewItem.innerHTML = `
+                    <p><strong>問題 ${index + 1}:</strong> ${item.question}</p>
+                    <p><strong>あなたの回答:</strong> ${item.userAnswer}</p>
+                    <p><strong>正解:</strong> ${item.correctAnswer}</p>
+                    <p><strong>説明:</strong> ${item.explanation}</p>
+                `;
+                reviewList.appendChild(reviewItem);
+            });
+        }
+
+        // ブックマークする関数
+        function bookmarkQuestion() {
+            const currentQuestion = currentQuizData[currentQuestionIndex];
+            const isAlreadyBookmarked = bookmarkedQuestions.some(q => q.question === currentQuestion.question);
+            
+            if (isAlreadyBookmarked) {
+                // ブックマークから削除
+                bookmarkedQuestions = bookmarkedQuestions.filter(q => q.question !== currentQuestion.question);
+                bookmarkedIndicator.style.display = 'none';
+            } else {
+                // ブックマークに追加
+                bookmarkedQuestions.push({...currentQuestion, index: currentQuestionIndex});
+                bookmarkedIndicator.style.display = 'inline';
+            }
+            
+            // ブックマークリストを更新
+            updateBookmarksList();
+        }
+
+        // ブックマークリストを更新する関数
+        function updateBookmarksList() {
+            bookmarksList.innerHTML = '';
+            
+            if (bookmarkedQuestions.length === 0) {
+                bookmarksList.innerHTML = '<p>ブックマークした問題はありません。</p>';
+                return;
+            }
+            
+            bookmarkedQuestions.forEach((item, index) => {
+                const bookmarkItem = document.createElement('div');
+                bookmarkItem.classList.add('bookmark-item');
+                bookmarkItem.textContent = `問題 ${index + 1}: ${item.question}`;
+                bookmarkItem.addEventListener('click', () => {
+                    goToBookmarkedQuestion(item);
+                });
+                bookmarksList.appendChild(bookmarkItem);
+            });
+        }
+
+        // ブックマークした問題に移動する関数
+        function goToBookmarkedQuestion(question) {
+            // クイズが終了している場合は再開する
+            if (resultsContainer.style.display === 'block') {
+                restartQuiz();
+            }
+            
+            // 該当する問題を探す
+            const index = currentQuizData.findIndex(q => q.question === question.question);
+            if (index !== -1) {
+                currentQuestionIndex = index;
+                loadQuestion();
+            }
+            
+            // ブックマークパネルを非表示
+            bookmarksPanel.style.display = 'none';
+        }
+
+        // ブックマークを表示する関数
+        function showBookmarks() {
+            if (bookmarksPanel.style.display === 'block') {
+                bookmarksPanel.style.display = 'none';
+            } else {
+                updateBookmarksList();
+                bookmarksPanel.style.display = 'block';
+                reviewList.style.display = 'none';
+            }
+        }
+
+        // イベントリスナーを設定
+        submitButton.addEventListener('click', submitAnswer);
+        nextButton.addEventListener('click', nextQuestion);
+        restartButton.addEventListener('click', restartQuiz);
+        reviewButton.addEventListener('click', showIncorrectAnswers);
+        bookmarkButton.addEventListener('click', bookmarkQuestion);
+        showBookmarksButton.addEventListener('click', showBookmarks);
+
+        // クイズを初期化して開始
+        initializeQuiz();
+    </script>
+</body>
+</html>
